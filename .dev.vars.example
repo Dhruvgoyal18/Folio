@@ -1,0 +1,20 @@
+# Local secrets & settings for `npx wrangler pages dev out` (copy to .dev.vars — it's git-ignored).
+# For `npm run serve`, set the same names as environment variables instead.
+# In production, set ANTHROPIC_API_KEY as a *secret* in the Cloudflare Pages dashboard
+# (Settings → Variables and Secrets) or with `npx wrangler pages secret put ANTHROPIC_API_KEY`.
+
+# Optional — enables Claude for résumé extraction and the chat assistant.
+# Without it, extraction is rule-based and chat quotes résumé lines (offline mode).
+ANTHROPIC_API_KEY=sk-ant-...
+
+# Optional overrides (defaults shown)
+# ANTHROPIC_MODEL=claude-haiku-4-5
+# ANTHROPIC_EXTRACT_MODEL=claude-haiku-4-5
+# HOME_SITE=dhruv-goyal          # show one site at "/" instead of the Folio landing page
+# CHAT_RATE_PER_MIN=8
+# CHAT_RATE_PER_DAY=80
+# CHAT_SITE_PER_DAY=300
+# EXTRACT_RATE_PER_MIN=6
+# CREATE_RATE_PER_MIN=3
+# CREATE_RATE_PER_DAY=20
+# ALLOWED_ORIGINS=https://your-custom-domain.com

@@ -1,0 +1,1018 @@
+{
+  "meta": {
+    "source": "Dhruv_Goyal_Resume.pdf",
+    "parsedAt": "2026-10-03",
+    "notes": [
+      "Bullet text is verbatim from the PDF, except h-zolve-reddit, which was softened at the owner's request (the original wording is kept in `original`).",
+      "profile.headline and every projects[].summary are composed from resume bullets and flagged derived; no new facts were added.",
+      "The resume has no Projects section. projects[] are case files regrouping existing bullets, each linked to its source role or competition.",
+      "Skills with listed:false are named inside a bullet but not in the Skills section.",
+      "NUS (Jun-Jul 2026) overlaps Zolve (Sept 2025-Present); the owner confirmed both dates are correct.",
+      "The Titan bullet 'improving forecasting accuracy 89%' is ambiguous (to vs by); it is shown as a value of 89% with the resume's own wording."
+    ]
+  },
+  "profile": {
+    "name": "Dhruv Goyal",
+    "callsign": "DG-01",
+    "headline": "AI Engineer building multi-agent systems, RAG pipelines and applied ML",
+    "headlineDerived": true,
+    "currentRole": "AI Engineer at Zolve Innovations",
+    "email": "dhruvgoyal990@gmail.com",
+    "phone": "+91 96641 34435",
+    "links": [
+      {
+        "kind": "email",
+        "label": "dhruvgoyal990@gmail.com",
+        "href": "mailto:dhruvgoyal990@gmail.com"
+      },
+      {
+        "kind": "phone",
+        "label": "+91 96641 34435",
+        "href": "tel:+919664134435"
+      },
+      {
+        "kind": "linkedin",
+        "label": "LinkedIn",
+        "href": "https://www.linkedin.com/in/dhruv-goyal-a8330724a/"
+      },
+      {
+        "kind": "github",
+        "label": "GitHub",
+        "href": "https://github.com/Dhruvgoyal18"
+      },
+      {
+        "kind": "resume",
+        "label": "Download resume (PDF)",
+        "href": "/Dhruv_Goyal_Resume.pdf"
+      }
+    ]
+  },
+  "domains": [
+    {
+      "id": "agents-llm",
+      "label": "Agents, LLMs & NLP"
+    },
+    {
+      "id": "ml-dl",
+      "label": "ML & Deep Learning"
+    },
+    {
+      "id": "data-infra",
+      "label": "Data & Infrastructure"
+    },
+    {
+      "id": "vision-audio",
+      "label": "Vision & Audio"
+    },
+    {
+      "id": "stats-forecasting",
+      "label": "Statistics & Forecasting"
+    },
+    {
+      "id": "languages-tools",
+      "label": "Languages & Tools"
+    }
+  ],
+  "education": [
+    {
+      "id": "edu-iit-kgp",
+      "institution": "Indian Institute of Technology, Kharagpur",
+      "short": "IIT Kharagpur",
+      "degree": "B.Tech in Civil Engineering",
+      "start": "2021-12",
+      "end": "2025-06",
+      "coursework": [
+        "Machine Learning",
+        "Deep Learning",
+        "Data Structures & Algorithms",
+        "Probability & Statistics"
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "id": "c",
+      "name": "C",
+      "domain": "languages-tools",
+      "listed": true,
+      "listGroup": "Programming Languages"
+    },
+    {
+      "id": "cpp",
+      "name": "C++",
+      "domain": "languages-tools",
+      "listed": true,
+      "listGroup": "Programming Languages"
+    },
+    {
+      "id": "python",
+      "name": "Python",
+      "domain": "languages-tools",
+      "listed": true,
+      "listGroup": "Programming Languages"
+    },
+    {
+      "id": "ros",
+      "name": "ROS",
+      "domain": "languages-tools",
+      "listed": true,
+      "listGroup": "Programming Languages"
+    },
+    {
+      "id": "sql",
+      "name": "SQL",
+      "domain": "languages-tools",
+      "listed": true,
+      "listGroup": "Programming Languages"
+    },
+    {
+      "id": "numpy",
+      "name": "NumPy",
+      "domain": "data-infra",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "pandas",
+      "name": "Pandas",
+      "domain": "data-infra",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "matplotlib",
+      "name": "Matplotlib",
+      "domain": "data-infra",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "scikit-learn",
+      "name": "Scikit-Learn",
+      "domain": "ml-dl",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "jupyter",
+      "name": "Jupyter",
+      "domain": "languages-tools",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "tensorflow",
+      "name": "TensorFlow",
+      "domain": "ml-dl",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "keras",
+      "name": "Keras",
+      "domain": "ml-dl",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "scipy",
+      "name": "SciPy",
+      "domain": "data-infra",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "nltk",
+      "name": "NLTK",
+      "domain": "agents-llm",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "ultralytics",
+      "name": "Ultralytics",
+      "domain": "vision-audio",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "librosa",
+      "name": "Librosa",
+      "domain": "vision-audio",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "opencv",
+      "name": "OpenCV",
+      "domain": "vision-audio",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "langchain",
+      "name": "LangChain",
+      "domain": "agents-llm",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "langgraph",
+      "name": "LangGraph",
+      "domain": "agents-llm",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "crewai",
+      "name": "CrewAI",
+      "domain": "agents-llm",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "fastmcp",
+      "name": "FastMCP",
+      "domain": "agents-llm",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "sqlalchemy",
+      "name": "SQLAlchemy",
+      "domain": "data-infra",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "kafka",
+      "name": "Kafka",
+      "domain": "data-infra",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "selenium",
+      "name": "Selenium",
+      "domain": "data-infra",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "chromadb",
+      "name": "ChromaDB",
+      "domain": "agents-llm",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "pinecone",
+      "name": "Pinecone",
+      "domain": "agents-llm",
+      "listed": true,
+      "listGroup": "Libraries & Frameworks"
+    },
+    {
+      "id": "matlab-simulink",
+      "name": "MATLAB/Simulink",
+      "domain": "languages-tools",
+      "listed": true,
+      "listGroup": "Tools & Software"
+    },
+    {
+      "id": "github",
+      "name": "GitHub",
+      "domain": "languages-tools",
+      "listed": true,
+      "listGroup": "Tools & Software"
+    },
+    {
+      "id": "postgresql",
+      "name": "PostgreSQL",
+      "domain": "data-infra",
+      "listed": true,
+      "listGroup": "Tools & Software"
+    },
+    {
+      "id": "mcp-servers",
+      "name": "MCP Servers",
+      "domain": "agents-llm",
+      "listed": true,
+      "listGroup": "Tools & Software"
+    },
+    {
+      "id": "docker",
+      "name": "Docker",
+      "domain": "languages-tools",
+      "listed": true,
+      "listGroup": "Tools & Software"
+    },
+    {
+      "id": "presto-trino",
+      "name": "Presto/Trino",
+      "domain": "data-infra",
+      "listed": false
+    },
+    {
+      "id": "rag",
+      "name": "RAG",
+      "domain": "agents-llm",
+      "listed": false
+    },
+    {
+      "id": "oauth",
+      "name": "OAuth",
+      "domain": "data-infra",
+      "listed": false
+    },
+    {
+      "id": "google-sheets-api",
+      "name": "Google Sheets API",
+      "domain": "data-infra",
+      "listed": false
+    },
+    {
+      "id": "cnn",
+      "name": "CNN",
+      "domain": "ml-dl",
+      "listed": false
+    },
+    {
+      "id": "modal",
+      "name": "Modal",
+      "domain": "data-infra",
+      "listed": false
+    },
+    {
+      "id": "hugging-face",
+      "name": "HuggingFace",
+      "domain": "data-infra",
+      "listed": false
+    },
+    {
+      "id": "openseadragon",
+      "name": "OpenSeadragon",
+      "domain": "vision-audio",
+      "listed": false
+    },
+    {
+      "id": "llama-3-1",
+      "name": "Llama-3.1",
+      "domain": "agents-llm",
+      "listed": false
+    },
+    {
+      "id": "phi-3",
+      "name": "Phi-3",
+      "domain": "agents-llm",
+      "listed": false
+    },
+    {
+      "id": "spacy",
+      "name": "spaCy",
+      "domain": "agents-llm",
+      "listed": false
+    },
+    {
+      "id": "tf-idf",
+      "name": "TF-IDF",
+      "domain": "agents-llm",
+      "listed": false
+    },
+    {
+      "id": "word2vec",
+      "name": "Word2Vec",
+      "domain": "agents-llm",
+      "listed": false
+    },
+    {
+      "id": "kmeans",
+      "name": "KMeans",
+      "domain": "ml-dl",
+      "listed": false
+    },
+    {
+      "id": "pca",
+      "name": "PCA",
+      "domain": "ml-dl",
+      "listed": false
+    },
+    {
+      "id": "roberta",
+      "name": "RoBERTa",
+      "domain": "ml-dl",
+      "listed": false
+    },
+    {
+      "id": "hypothesis-testing",
+      "name": "ADF / KPSS / ANOVA / Chi-Square",
+      "domain": "stats-forecasting",
+      "listed": false
+    },
+    {
+      "id": "arima-family",
+      "name": "ARIMA / SARIMA / SARIMAX",
+      "domain": "stats-forecasting",
+      "listed": false
+    },
+    {
+      "id": "lstm-gru",
+      "name": "LSTM / GRU",
+      "domain": "ml-dl",
+      "listed": false
+    },
+    {
+      "id": "openai-function-calling",
+      "name": "OpenAI Function Calling",
+      "domain": "agents-llm",
+      "listed": false
+    },
+    {
+      "id": "gpt-3-5-turbo",
+      "name": "GPT-3.5-turbo",
+      "domain": "agents-llm",
+      "listed": false
+    },
+    {
+      "id": "ada-002",
+      "name": "Text Embedding Ada-002",
+      "domain": "agents-llm",
+      "listed": false
+    },
+    {
+      "id": "faiss",
+      "name": "FAISS",
+      "domain": "agents-llm",
+      "listed": false
+    },
+    {
+      "id": "xgboost",
+      "name": "XGBoost",
+      "domain": "ml-dl",
+      "listed": false
+    },
+    {
+      "id": "shap",
+      "name": "SHAP",
+      "domain": "ml-dl",
+      "listed": false
+    }
+  ],
+  "experience": [
+    {
+      "id": "exp-titan",
+      "org": "Titan Company Limited",
+      "orgShort": "Titan",
+      "role": "Data Analyst",
+      "type": "Internship",
+      "start": "2024-05",
+      "end": "2024-06",
+      "groups": [
+        {
+          "highlights": [
+            {
+              "id": "h-titan-eda",
+              "text": "Performed skewness transformation, time series decomposition, & correlation analysis, optimizing feature selection & visual insights",
+              "skills": [],
+              "metrics": []
+            },
+            {
+              "id": "h-titan-tests",
+              "text": "Conducted hypothesis testing with ADF, KPSS & ANOVA tests to identify significant sales drivers, enhancing model accuracy",
+              "skills": [
+                "hypothesis-testing"
+              ],
+              "metrics": []
+            },
+            {
+              "id": "h-titan-models",
+              "text": "Implemented ARIMA, SARIMA, LSTM, GRU models for forecasting & addressing patterns, to achieve accuracy of about 83%",
+              "skills": [
+                "arima-family",
+                "lstm-gru"
+              ],
+              "metrics": [
+                {
+                  "value": 83,
+                  "prefix": "~",
+                  "suffix": "%",
+                  "decimals": 0,
+                  "label": "forecast accuracy",
+                  "kpi": false
+                }
+              ]
+            },
+            {
+              "id": "h-titan-festivals",
+              "text": "Incorporated calendar events for holidays/festivals, using SARIMAX modeling & pre/post analysis, improving forecasting accuracy 89%",
+              "skills": [
+                "arima-family"
+              ],
+              "metrics": [
+                {
+                  "value": 89,
+                  "prefix": "",
+                  "suffix": "%",
+                  "decimals": 0,
+                  "label": "forecasting accuracy with festival calendar",
+                  "kpi": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exp-iitkgp-ai",
+      "org": "Department of Artificial Intelligence, IIT Kharagpur",
+      "orgShort": "IIT KGP · AI Dept.",
+      "role": "Research Intern",
+      "type": "Internship",
+      "start": "2024-08",
+      "end": "2024-12",
+      "groups": [
+        {
+          "highlights": [
+            {
+              "id": "h-kgp-datagen",
+              "text": "Developed data generation pipeline via LangChain with Llama-3.1, Phi-3 & one-shot prompting with regex for preprocessing data",
+              "skills": [
+                "langchain",
+                "llama-3-1",
+                "phi-3"
+              ],
+              "metrics": []
+            },
+            {
+              "id": "h-kgp-ner",
+              "text": "Built text analysis system using Named Entity Recognition from spaCy, Part-of-Speech tagging for entity frequency distribution",
+              "skills": [
+                "spacy"
+              ],
+              "metrics": []
+            },
+            {
+              "id": "h-kgp-clustering",
+              "text": "Visualized data by text clustering using TF-IDF & Word2Vec embeddings with KMeans & PCA dimensionality reduction",
+              "skills": [
+                "tf-idf",
+                "word2vec",
+                "kmeans",
+                "pca"
+              ],
+              "metrics": []
+            },
+            {
+              "id": "h-kgp-roberta",
+              "text": "Fine-tuned RoBERTa to score data persuasiveness & improved scam detection across highly persuasive synthetic v2 by 65%",
+              "skills": [
+                "roberta"
+              ],
+              "metrics": [
+                {
+                  "value": 65,
+                  "prefix": "+",
+                  "suffix": "%",
+                  "decimals": 0,
+                  "label": "scam detection on persuasive synthetic v2",
+                  "kpi": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exp-zolve",
+      "org": "Zolve Innovations Private Limited",
+      "orgShort": "Zolve",
+      "role": "AI Engineer",
+      "type": "Full-time",
+      "start": "2025-09",
+      "end": null,
+      "groups": [
+        {
+          "title": "Multi-Agent Infrastructure & Enterprise AI Systems",
+          "highlights": [
+            {
+              "id": "h-zolve-nl2sql",
+              "text": "Built a 4-stage NLP-to-SQL pipeline on Presto/Trino using RAG over 5K+ query logs, improving SQL accuracy from 68% to 87%",
+              "skills": [
+                "sql",
+                "presto-trino",
+                "rag"
+              ],
+              "metrics": [
+                {
+                  "value": 87,
+                  "from": 68,
+                  "prefix": "",
+                  "suffix": "%",
+                  "decimals": 0,
+                  "label": "SQL accuracy",
+                  "kpi": true
+                },
+                {
+                  "value": 5,
+                  "prefix": "",
+                  "suffix": "K+",
+                  "decimals": 0,
+                  "label": "query logs behind the RAG index",
+                  "kpi": false
+                }
+              ]
+            },
+            {
+              "id": "h-zolve-mcp-servers",
+              "text": "Engineered AML & Google Workspace MCP server, Slack forensic reporting, OAuth authentication, deep Google Sheets API integration",
+              "skills": [
+                "mcp-servers",
+                "oauth",
+                "google-sheets-api"
+              ],
+              "metrics": []
+            },
+            {
+              "id": "h-zolve-langgraph",
+              "text": "Built LangGraph-based multi-agent framework supporting 20+ configurable workflows, tool routing & agent state management",
+              "skills": [
+                "langgraph"
+              ],
+              "metrics": [
+                {
+                  "value": 20,
+                  "prefix": "",
+                  "suffix": "+",
+                  "decimals": 0,
+                  "label": "configurable agent workflows",
+                  "kpi": true
+                }
+              ]
+            },
+            {
+              "id": "h-zolve-mcp-client",
+              "text": "Engineered MCP client layer with stdio/SSE transports, connection pooling & session recovery, achieving 95%+ workflow reliability",
+              "skills": [
+                "mcp-servers"
+              ],
+              "metrics": [
+                {
+                  "value": 95,
+                  "prefix": "",
+                  "suffix": "%+",
+                  "decimals": 0,
+                  "label": "workflow reliability",
+                  "kpi": true
+                }
+              ]
+            },
+            {
+              "id": "h-zolve-kafka",
+              "text": "Built Kafka-based workflow trigger system with time-aware scheduling, message parsing, daemon-thread execution for agent workflows",
+              "skills": [
+                "kafka"
+              ],
+              "metrics": []
+            }
+          ]
+        },
+        {
+          "title": "AI-Powered User Acquisition Systems",
+          "highlights": [
+            {
+              "id": "h-zolve-reddit",
+              "text": "Created an LLM-driven community engagement tool for Reddit, using audience-segmented accounts and LLM-based actions to grow organic brand presence",
+              "original": "Created Reddit social engagement tool, deploying persona-segmented accounts to drive organic brand presence via LLM-based actions",
+              "skills": [],
+              "metrics": []
+            },
+            {
+              "id": "h-zolve-scraping",
+              "text": "Built scraping pipeline on LinkedIn, MyVisaJobs, Yocket via API reverse-engineering & Selenium, aggregating 400k+ potential leads",
+              "skills": [
+                "selenium"
+              ],
+              "metrics": [
+                {
+                  "value": 400,
+                  "prefix": "",
+                  "suffix": "k+",
+                  "decimals": 0,
+                  "label": "potential leads aggregated",
+                  "kpi": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exp-nus",
+      "org": "Artificial Intelligence Institute, National University of Singapore",
+      "orgShort": "NUS · AI Institute",
+      "role": "AI Engineer",
+      "type": "Internship",
+      "start": "2026-06",
+      "end": "2026-07",
+      "groups": [
+        {
+          "highlights": [
+            {
+              "id": "h-nus-cnn",
+              "text": "Build 3-block CNN binary classifier over 64×64 DAPI tiles, validated via 5-fold Leave-One-Image-Out CV, lifting F1 by 27%",
+              "skills": [
+                "cnn"
+              ],
+              "metrics": [
+                {
+                  "value": 27,
+                  "prefix": "+",
+                  "suffix": "%",
+                  "decimals": 0,
+                  "label": "F1 lift (5-fold LOIO CV)",
+                  "kpi": true
+                }
+              ]
+            },
+            {
+              "id": "h-nus-modal",
+              "text": "Deployed model inference on Modal microservice, bypassing a 150-second timeout, and optimized the serving pipeline",
+              "skills": [
+                "modal"
+              ],
+              "metrics": [
+                {
+                  "value": 150,
+                  "prefix": "",
+                  "suffix": "s",
+                  "decimals": 0,
+                  "label": "serving timeout bypassed",
+                  "kpi": false
+                }
+              ]
+            },
+            {
+              "id": "h-nus-dzi",
+              "text": "Architected pipeline on HuggingFace with on-demand display/DZI generation via OpenSeadragon, 99.93% reduction in peak memory",
+              "skills": [
+                "hugging-face",
+                "openseadragon"
+              ],
+              "metrics": [
+                {
+                  "value": 99.93,
+                  "prefix": "",
+                  "suffix": "%",
+                  "decimals": 2,
+                  "label": "peak memory reduction",
+                  "kpi": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "competitions": [
+    {
+      "id": "comp-inter-iit",
+      "name": "Trumio.AI Event – Inter IIT Tech 12.0",
+      "short": "Inter IIT 12.0",
+      "result": "Gold Medal",
+      "start": "2023-10",
+      "end": "2023-12",
+      "highlights": [
+        {
+          "id": "h-iit-kpi-schema",
+          "text": "Automated JSON schema generation of project KPIs via OpenAI Function Calling, enhanced project tracking & contract finalization",
+          "skills": [
+            "openai-function-calling"
+          ],
+          "metrics": []
+        },
+        {
+          "id": "h-iit-score",
+          "text": "Developed Resume, GitHub score calculator with Text Embedding Ada-002, GPT-3.5-turbo & FAISS, enhancing selection accuracy",
+          "skills": [
+            "ada-002",
+            "gpt-3-5-turbo",
+            "faiss"
+          ],
+          "metrics": []
+        },
+        {
+          "id": "h-iit-roadmap",
+          "text": "Developed LLM-driven roadmap system that generates personalized learning paths & live adaptive tests to improve user and team skills",
+          "skills": [],
+          "metrics": []
+        }
+      ]
+    },
+    {
+      "id": "comp-amex",
+      "name": "The American Express Campus Challenge 2024",
+      "short": "Amex Challenge",
+      "result": "Qualified Round 2",
+      "start": "2024-06",
+      "end": "2024-07",
+      "highlights": [
+        {
+          "id": "h-amex-features",
+          "text": "Engineered over 70+ features from key variables, applied ANOVA & Chi-Square tests for correlations, enhancing model precision",
+          "skills": [
+            "hypothesis-testing"
+          ],
+          "metrics": [
+            {
+              "value": 70,
+              "prefix": "",
+              "suffix": "+",
+              "decimals": 0,
+              "label": "engineered features",
+              "kpi": false
+            }
+          ]
+        },
+        {
+          "id": "h-amex-xgboost",
+          "text": "Utilized XGBoost & SHAP for comprehensive feature importance evaluation, achieved over 65% accuracy in predicting winners",
+          "skills": [
+            "xgboost",
+            "shap"
+          ],
+          "metrics": [
+            {
+              "value": 65,
+              "prefix": ">",
+              "suffix": "%",
+              "decimals": 0,
+              "label": "winner-prediction accuracy",
+              "kpi": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "awards": [
+    {
+      "id": "award-gc-silver",
+      "title": "Silver Medal · Product Development",
+      "text": "Recipient of Silver Medal in Product Development in General Championship of Technology, 2023, designed Vaccine Transport Box",
+      "year": 2023,
+      "medal": "silver"
+    },
+    {
+      "id": "award-robosumo",
+      "title": "RoboSumo · 5th in Institute",
+      "text": "Competed in the RoboSumo event organized by the Technology Robotix Society, securing an impressive 5th position among Institute",
+      "medal": "rank"
+    },
+    {
+      "id": "award-cricket",
+      "title": "Gold · GC Cricket, RP Hall",
+      "text": "Actively participated as a member of the Gold-Winning Cricket Team of Rajendra Prasad Hall in the General Championship, 2023.",
+      "year": 2023,
+      "medal": "team"
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj-nl2sql",
+      "codename": "QUERY-87",
+      "title": "Text-to-SQL Copilot",
+      "summary": "A 4-stage NLP-to-SQL pipeline on Presto/Trino, grounded with RAG over 5K+ historical query logs, that took SQL accuracy from 68% to 87%.",
+      "derived": true,
+      "source": {
+        "kind": "experience",
+        "id": "exp-zolve"
+      },
+      "highlightIds": [
+        "h-zolve-nl2sql"
+      ],
+      "highlights": []
+    },
+    {
+      "id": "proj-agent-platform",
+      "codename": "SWARM-20",
+      "title": "Multi-Agent Workflow Platform",
+      "summary": "A LangGraph multi-agent framework running 20+ configurable workflows, an MCP client layer at 95%+ reliability, and Kafka-triggered scheduling.",
+      "derived": true,
+      "source": {
+        "kind": "experience",
+        "id": "exp-zolve"
+      },
+      "highlightIds": [
+        "h-zolve-langgraph",
+        "h-zolve-mcp-client",
+        "h-zolve-kafka"
+      ],
+      "highlights": []
+    },
+    {
+      "id": "proj-mcp-servers",
+      "codename": "MCP-AML",
+      "title": "Enterprise MCP Servers",
+      "summary": "AML and Google Workspace MCP servers with Slack forensic reporting, OAuth authentication and deep Google Sheets API integration.",
+      "derived": true,
+      "source": {
+        "kind": "experience",
+        "id": "exp-zolve"
+      },
+      "highlightIds": [
+        "h-zolve-mcp-servers"
+      ],
+      "highlights": []
+    },
+    {
+      "id": "proj-growth-engine",
+      "codename": "REACH-400K",
+      "title": "AI-Powered User Acquisition",
+      "summary": "A scraping pipeline across LinkedIn, MyVisaJobs and Yocket that aggregated 400k+ potential leads, plus an LLM-driven community engagement tool.",
+      "derived": true,
+      "source": {
+        "kind": "experience",
+        "id": "exp-zolve"
+      },
+      "highlightIds": [
+        "h-zolve-scraping",
+        "h-zolve-reddit"
+      ],
+      "highlights": []
+    },
+    {
+      "id": "proj-dapi",
+      "codename": "DZI-9993",
+      "title": "DAPI Tile Classifier & Deep-Zoom Viewer",
+      "summary": "A 3-block CNN over 64×64 DAPI tiles (+27% F1), served on Modal past a 150-second timeout, with on-demand DZI tiles cutting peak memory by 99.93%.",
+      "derived": true,
+      "source": {
+        "kind": "experience",
+        "id": "exp-nus"
+      },
+      "highlightIds": [
+        "h-nus-cnn",
+        "h-nus-modal",
+        "h-nus-dzi"
+      ],
+      "highlights": []
+    },
+    {
+      "id": "proj-persuasion",
+      "codename": "PERSUADE-65",
+      "title": "Persuasion-Aware Scam Detection",
+      "summary": "LLM-generated synthetic data, NER and clustering analysis, and a fine-tuned RoBERTa persuasiveness scorer that improved scam detection by 65%.",
+      "derived": true,
+      "source": {
+        "kind": "experience",
+        "id": "exp-iitkgp-ai"
+      },
+      "highlightIds": [
+        "h-kgp-datagen",
+        "h-kgp-ner",
+        "h-kgp-clustering",
+        "h-kgp-roberta"
+      ],
+      "highlights": []
+    },
+    {
+      "id": "proj-forecasting",
+      "codename": "SARIMAX-89",
+      "title": "Festival-Aware Sales Forecasting",
+      "summary": "Statistical testing and ARIMA/SARIMA/LSTM/GRU forecasting at about 83% accuracy, with holiday and festival calendars added via SARIMAX.",
+      "derived": true,
+      "source": {
+        "kind": "experience",
+        "id": "exp-titan"
+      },
+      "highlightIds": [
+        "h-titan-eda",
+        "h-titan-tests",
+        "h-titan-models",
+        "h-titan-festivals"
+      ],
+      "highlights": []
+    },
+    {
+      "id": "proj-trumio",
+      "codename": "GOLD-12.0",
+      "title": "Trumio.AI · Inter IIT Gold",
+      "summary": "Gold-medal Inter IIT Tech 12.0 build: function-calling KPI schemas, an embedding-based resume and GitHub scorer, and LLM learning roadmaps.",
+      "derived": true,
+      "source": {
+        "kind": "competition",
+        "id": "comp-inter-iit"
+      },
+      "highlightIds": [
+        "h-iit-kpi-schema",
+        "h-iit-score",
+        "h-iit-roadmap"
+      ],
+      "highlights": []
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+# ── dependencies ────────────────────────────────────────────────
+node_modules/
+
+# ── build output (Cloudflare builds these from source) ─────────
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+# PDF.js worker, copied from node_modules at build time
+public/vendor/
+
+# ── Cloudflare / local runtime ─────────────────────────────────
+.wrangler/
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+# sites published while running `npm run serve` locally
+.data/
+
+# ── secrets ─────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── test & QA artefacts (regenerate with the scripts) ──────────
+test-results/
+playwright-report/
+blob-report/
+coverage/
+docs/reports/lighthouse/runs/
+docs/reports/lighthouse/*.report.html
+docs/reports/lighthouse/*.report.json
+docs/reports/playwright-results.json
+docs/screenshots/audit/
+docs/screenshots/sites/
+docs/video/
+
+# ── editor / OS ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+npm-debug.log*
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# ── local leftovers ─────────────────────────────────────────────
+_to_delete/
+*.zip
+AGENTS.md
+CLAUDE.md

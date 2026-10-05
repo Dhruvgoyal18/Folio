@@ -1,0 +1,35 @@
+Dhruv Goyal
+Phone: +91 9664134435 | Email: dhruvgoyal990@gmail.com | LinkedIn | GitHub
+EDUCATION
+Indian Institute of Technology, Kharagpur	Dec 2021 – Jun 2025
+B.Tech in Civil Engineering
+EXPERIENCE
+Zolve Innovations Private Limited	Sept 2025 – Present, Full-time
+AI Engineer
+Multi-Agent Infrastructure & Enterprise AI Systems
+• Built a 4-stage NLP-to-SQL pipeline on Presto/Trino using RAG over 5K+ query logs, improving SQL accuracy from 68% to 87%
+• Built LangGraph-based multi-agent framework supporting 20+ configurable workflows, tool routing & agent state management
+AI-Powered User Acquisition Systems
+• Built scraping pipeline on LinkedIn, MyVisaJobs, Yocket via API reverse-engineering & Selenium, aggregating 400k+ potential leads
+Department of Artificial Intelligence, IIT Kharagpur	Aug 2024 – Dec 2024, Internship
+Research Intern
+• Fine-tuned RoBERTa to score data persuasiveness & improved scam detection across highly persuasive synthetic v2 by 65%
+PROJECTS
+Multi-Agent Infrastructure & Enterprise AI Systems — Zolve
+• Engineered MCP client layer with stdio/SSE transports, connection pooling & session recovery, achieving 95%+ workflow reliability
+Speech Emotion Recognition
+• Classified 8 emotions from audio with Librosa features and a CNN, reaching 72% accuracy
+Data Analysis of Retail Sales
+• Performed time series decomposition and ARIMA forecasting on 3 years of sales data
+POSITIONS OF RESPONSIBILITY
+General Secretary Maintenance | Rajendra Prasad Hall of Residence | IIT Kharagpur [Jul '24 - Apr '25]
+• Managed administrative affairs and student welfare for 850+ boarders as an active member of the executive 13-member Hall Council
+• Led a 300-member team for Illumination 2024, securing 2nd place out of 22 participating halls in IIT Kharagpur's largest cultural event
+• Achieved over 20% reduction in the hall's total budget of INR 0.9 Million through strategic financial planning and resource allocation
+COURSEWORK INFORMATION
+Academic Courses: Probability and Statistics | Advanced Calculus | Linear Algebra, Numerical and Complex Analysis | Electrical Technology |
+Basic Electronics | Safety Engineering and Management | Computational Chemistry | Programming and Data Structures (theory and lab)
+MOOCs: Data Structures and Algorithms | Data Science Mentorship Program | Data Analysis with Pandas and Python
+SKILLS
+Programming Languages: C, C++, Python, SQL
+Libraries & Frameworks: Numpy, Pandas, LangChain, LangGraph, Selenium

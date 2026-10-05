@@ -1,0 +1,61 @@
+# Runs on every push and pull request: build, type-check, unit tests, then the browser suite.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - name: Build (validates résumé data, tokens, then next build)
+        run: npm run build
+      - run: npm run typecheck
+      - run: npm test
+      - name: Pages Functions compile
+        run: npx wrangler pages functions build --outdir .wrangler/fn-check
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: out
+          retention-days: 3
+
+  e2e:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Playwright (desktop + mobile)
+        run: npx playwright test
+        env:
+          CI: "true"
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7

@@ -1,0 +1,42 @@
+# Cloudflare Pages project — Folio
+#   static site: ./out (built by `npm run build`)   ·   server code: ./functions (Pages Functions)
+# When this file exists, Cloudflare treats it as the source of truth for the project's
+# variables and bindings (the dashboard shows them read-only). Secrets are separate — see below.
+name = "folio"
+pages_build_output_dir = "out"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+ANTHROPIC_MODEL = "claude-haiku-4-5"
+CHAT_RATE_PER_MIN = "8"
+CHAT_RATE_PER_DAY = "80"
+CHAT_SITE_PER_DAY = "300"
+EXTRACT_RATE_PER_MIN = "6"
+CREATE_RATE_PER_MIN = "3"
+CREATE_RATE_PER_DAY = "20"
+# Show one site at "/" instead of the Folio landing page (a personal deployment):
+# HOME_SITE = "dhruv-goyal"
+# Extra origins allowed to POST to /api (same-origin always works):
+# ALLOWED_ORIGINS = "https://your-custom-domain.com"
+
+# ── Published sites are stored in Workers KV (REQUIRED for real use) ─────────────
+# 1. npx wrangler kv namespace create SITES
+# 2. paste the printed id below and uncomment the three lines
+# Without it the app still runs, but published sites live in memory and vanish.
+# [[kv_namespaces]]
+# binding = "SITES"
+# id = "<your-namespace-id>"
+
+# ── Secrets (never commit) ───────────────────────────────────────────────────────
+# Dashboard: Workers & Pages → folio → Settings → Variables and Secrets → Add (type: Secret)
+# or CLI:    npx wrangler pages secret put ANTHROPIC_API_KEY --project-name folio
+# Optional — without it extraction is rule-based and chat runs in offline mode.
+
+# ── Optional: a rate limit shared across isolates ────────────────────────────────
+# [[ratelimits]]
+# name = "RATE_LIMITER"
+# namespace_id = "1001"
+#   [ratelimits.simple]
+#   limit = 8
+#   period = 60

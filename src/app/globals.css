@@ -1,0 +1,278 @@
+@import "tailwindcss";
+@import "../design/tokens.css";
+@import "./fonts.css";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Tailwind utilities map onto token variables so themes switch at runtime. */
+@theme inline {
+  --color-paper: var(--c-paper);
+  --color-paper-raised: var(--c-paper-raised);
+  --color-paper-sunk: var(--c-paper-sunk);
+  --color-ink: var(--c-ink);
+  --color-ink-muted: var(--c-ink-muted);
+  --color-ink-faint: var(--c-ink-faint);
+  --color-signal: var(--c-signal);
+  --color-signal-ink: var(--c-signal-ink);
+  --color-on-signal: var(--c-on-signal);
+  --color-teal: var(--c-teal);
+  --color-rule: var(--c-rule);
+  --color-vellum: var(--c-vellum);
+  --color-scrim: var(--c-scrim);
+
+  --font-display: var(--ff-display);
+  --font-text: var(--ff-text);
+  --font-mono: var(--ff-mono);
+
+  --text-step--2: var(--fs--2);
+  --text-step--1: var(--fs--1);
+  --text-step-0: var(--fs-0);
+  --text-step-1: var(--fs-1);
+  --text-step-2: var(--fs-2);
+  --text-step-3: var(--fs-3);
+  --text-step-4: var(--fs-4);
+  --text-step-5: var(--fs-5);
+  --text-step-6: var(--fs-6);
+  --text-step-7: var(--fs-7);
+  --text-step-8: var(--fs-8);
+
+  --radius-xs: var(--r-xs);
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  --radius-xl: var(--r-xl);
+  --radius-pill: var(--r-pill);
+
+  --shadow-paper: var(--el-paper);
+  --shadow-lifted: var(--el-lifted);
+  --shadow-overlay: var(--el-overlay);
+
+  --ease-out: var(--ease-out);
+  --ease-in: var(--ease-in);
+  --ease-in-out: var(--ease-inOut);
+
+  --spacing-gutter: var(--sp-gutter);
+  --spacing-section: var(--sp-section);
+
+  --breakpoint-sm: 30rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+}
+
+@layer base {
+  html {
+    overflow-x: clip;
+    background: var(--c-paper);
+    color: var(--c-ink);
+    font-family: var(--ff-text);
+    font-size: 100%;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scrollbar-color: var(--c-ink-faint) transparent;
+  }
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-stopped { overflow: hidden; }
+
+  body {
+    min-height: 100dvh;
+    font-size: var(--fs-0);
+    line-height: var(--lh-normal);
+    overflow-x: clip;
+  }
+  ::selection { background: var(--c-signal); color: var(--c-on-signal); }
+
+  :focus-visible {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 3px;
+    border-radius: var(--r-xs);
+  }
+
+  h1, h2, h3, h4 { font-family: var(--ff-display); letter-spacing: var(--tr-tight); line-height: var(--lh-snug); text-wrap: balance; }
+  p { text-wrap: pretty; }
+  a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+  button { cursor: pointer; }
+}
+
+@layer components {
+  /* Drafting grid: 8px minor / 64px major, pure CSS (zero runtime cost) */
+  .drafting-grid {
+    background-image:
+      linear-gradient(var(--c-grid-major) 1px, transparent 1px),
+      linear-gradient(90deg, var(--c-grid-major) 1px, transparent 1px),
+      linear-gradient(var(--c-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--c-grid) 1px, transparent 1px);
+    background-size: 64px 64px, 64px 64px, 8px 8px, 8px 8px;
+    background-position: -1px -1px;
+  }
+
+  /* Static film grain via inline SVG turbulence — never animated */
+  .grain::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: var(--z-cursor);
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: multiply;
+  }
+  [data-theme="dark"] .grain::after { mix-blend-mode: screen; opacity: 0.05; }
+
+  .eyebrow {
+    font-family: var(--ff-mono);
+    font-size: var(--fs--2);
+    letter-spacing: var(--tr-caps);
+    text-transform: uppercase;
+    color: var(--c-ink-muted);
+  }
+  .mono { font-family: var(--ff-mono); letter-spacing: var(--tr-mono); }
+  .display { font-family: var(--ff-display); letter-spacing: var(--tr-display); line-height: var(--lh-tight); font-weight: var(--display-weight); }
+  [data-hero-case="upper"] .hero-name { text-transform: uppercase; }
+
+  .hairline { border-color: var(--c-rule); }
+  .vellum {
+    background: var(--c-vellum);
+    backdrop-filter: blur(var(--blur-md)) saturate(1.1);
+    -webkit-backdrop-filter: blur(var(--blur-md)) saturate(1.1);
+  }
+
+  /* Citation glow when the chat points at a section */
+  .cite-glow {
+    animation: cite-glow calc(var(--dur-cinematic) * 2) var(--ease-out) 1;
+    border-radius: var(--r-md);
+  }
+  @keyframes cite-glow {
+    0% { box-shadow: 0 0 0 0 var(--c-signal); }
+    15% { box-shadow: 0 0 0 4px var(--c-signal); }
+    100% { box-shadow: 0 0 0 18px transparent; }
+  }
+
+  .sr-only-focusable:not(:focus):not(:focus-within) {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+}
+
+/* View Transitions — theme switch reveals as a circle from the toggle */
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion="full"]) *, html:not([data-motion="full"]) *::before, html:not([data-motion="full"]) *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+html[data-motion="reduced"] *, html[data-motion="reduced"] *::before, html[data-motion="reduced"] *::after {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+}
+
+/* Custom cursor hides the native one only where the reticle is active */
+html.has-custom-cursor, html.has-custom-cursor * { cursor: none; }
+html.has-custom-cursor input, html.has-custom-cursor textarea, html.has-custom-cursor [contenteditable] { cursor: text; }
+
+/* Static citation mark for reduced motion */
+.cite-mark { outline: 2px solid var(--c-signal); outline-offset: 6px; border-radius: var(--r-md); }
+
+@keyframes split-rise { from { transform: translateY(110%) rotate(4deg); } to { transform: none; } }
+@keyframes split-settle { from { transform: translateY(18%); } to { transform: none; } }
+@keyframes split-wipe { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+/* transform-only entrance: the element is painted from frame one, so it can be the LCP */
+@keyframes rise-only { from { transform: translateY(var(--rise, 24px)); } to { transform: none; } }
+@keyframes rise-in { from { opacity: 0; transform: translateY(var(--rise, 24px)); } to { opacity: 1; transform: none; } }
+
+
+/* ---------- Concept + texture layers (set by a site's genome on <html>) ---------- */
+
+/* drafting grid is the "grid" texture; other textures hide it */
+html[data-texture]:not([data-texture="grid"]) .drafting-grid { background-image: none; }
+html[data-texture="none"] .grain::after,
+html[data-texture="scanlines"] .grain::after,
+html[data-texture="grid"][data-concept="terminal"] .grain::after { display: none; }
+html[data-texture="scanlines"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-cursor);
+  background: repeating-linear-gradient(to bottom, transparent 0 2px, color-mix(in oklab, var(--c-ink) 4%, transparent) 2px 3px);
+}
+
+/* Editorial: flat, hairline, print-like */
+html[data-concept="editorial"] .shadow-paper,
+html[data-concept="editorial"] .shadow-lifted { box-shadow: none; }
+html[data-concept="editorial"] body { font-size: calc(var(--fs-0) * 1.06); }
+html[data-concept="editorial"] .eyebrow { font-family: var(--ff-text); font-style: italic; text-transform: none; letter-spacing: 0; font-size: var(--fs--1); }
+
+/* Terminal: comment-style eyebrows and a blinking caret helper */
+html[data-concept="terminal"] .eyebrow::before { content: "// "; }
+.caret::after { content: "▍"; margin-left: 0.08em; color: var(--c-signal); animation: caret-blink 1s steps(1) infinite; }
+@keyframes caret-blink { 50% { opacity: 0; } }
+
+@keyframes contour-draw { to { stroke-dashoffset: 0; } }
+
+/* landing: fanned example sites settle in once */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-motion="full"] .fan-card { animation: fade-in var(--dur-slow) var(--ease-out) both; animation-delay: calc(var(--i) * 120ms + 200ms); }
+}
+
+/* ───────────── Platform surface (landing, studio): a calm, compact product UI ─────────────
+   The portfolio scale above is cinematic; product screens use a 14px base and tighter steps. */
+.app {
+  --fs--2: 0.75rem;
+  --fs--1: 0.8125rem;
+  --fs-0: 0.875rem;
+  --fs-1: 1rem;
+  --fs-2: 1.25rem;
+  --fs-3: clamp(1.4rem, 1.2rem + 0.7vw, 1.75rem);
+  --fs-4: clamp(1.6rem, 1.3rem + 1.2vw, 2.25rem);
+  --fs-5: clamp(2.2rem, 1.5rem + 2.8vw, 3.75rem);
+  --ctl-h: 2.25rem;
+  font-size: var(--fs-0);
+  line-height: 1.5;
+}
+.app .display { letter-spacing: -0.03em; }
+.app .field {
+  width: 100%;
+  min-height: var(--ctl-h);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--c-rule);
+  background: var(--c-paper-raised);
+  color: var(--c-ink);
+  padding: 0.45rem 0.7rem;
+  font-size: var(--fs-0);
+  line-height: 1.45;
+  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+.app .field:hover { border-color: color-mix(in srgb, var(--c-ink) 30%, transparent); }
+.app .field:focus-visible { outline: none; border-color: var(--c-signal-ink); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-signal) 28%, transparent); }
+.app .field::placeholder { color: var(--c-ink-muted); opacity: 0.8; }
+.app textarea.field { field-sizing: content; min-height: 4.5rem; max-height: 22rem; resize: vertical; }
+.app .btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  height: var(--ctl-h); padding: 0 0.9rem; border-radius: 999px;
+  font-size: var(--fs-0); font-weight: 500; white-space: nowrap;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.app .btn:disabled { opacity: 0.45; pointer-events: none; }
+.app .btn-primary { background: var(--c-ink); color: var(--c-paper); }
+.app .btn-primary:hover { background: var(--c-signal-ink); color: var(--c-on-signal); }
+.app .btn-accent { background: var(--c-signal-ink); color: var(--c-on-signal); }
+.app .btn-accent:hover { background: var(--c-ink); color: var(--c-paper); }
+.app .btn-outline { border: 1px solid var(--c-rule); color: var(--c-ink); }
+.app .btn-outline:hover { border-color: var(--c-ink); }
+.app .btn-ghost { color: var(--c-ink-muted); padding: 0 0.6rem; }
+.app .btn-ghost:hover { color: var(--c-ink); background: color-mix(in srgb, var(--c-ink) 6%, transparent); }
+.app .btn-sm { height: 1.875rem; padding: 0 0.7rem; font-size: var(--fs--1); }
+.app .btn-lg { height: 2.75rem; padding: 0 1.25rem; font-size: var(--fs-1); }
+.app .panel { border: 1px solid var(--c-rule); background: var(--c-paper-raised); border-radius: var(--r-md); }
+.app .label { font-size: var(--fs--1); font-weight: 500; color: var(--c-ink); }
+.app .hint { font-size: var(--fs--2); color: var(--c-ink-muted); }
+.app .kicker { font-family: var(--ff-mono); font-size: var(--fs--2); letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-ink-muted); }

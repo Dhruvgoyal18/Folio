@@ -1,0 +1,47 @@
+# Optional: deploy to Cloudflare Pages from GitHub Actions.
+# Use EITHER this workflow OR Cloudflare's own Git integration (dashboard → "Connect to Git"), not both.
+# Needs repository secrets CLOUDFLARE_API_TOKEN (permission: Cloudflare Pages — Edit) and
+# CLOUDFLARE_ACCOUNT_ID. Without them the job is skipped.
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      deployments: write
+    env:
+      HAS_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+    steps:
+      - name: Skip when Cloudflare secrets are not configured
+        if: env.HAS_TOKEN != 'true'
+        run: echo "CLOUDFLARE_API_TOKEN not set — skipping deploy (using Cloudflare Git integration?)."
+      - uses: actions/checkout@v4
+        if: env.HAS_TOKEN == 'true'
+      - uses: actions/setup-node@v4
+        if: env.HAS_TOKEN == 'true'
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+        if: env.HAS_TOKEN == 'true'
+      - run: npm run build
+        if: env.HAS_TOKEN == 'true'
+      - name: Deploy (static site + Functions)
+        if: env.HAS_TOKEN == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy out --project-name folio --branch ${{ github.ref_name }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

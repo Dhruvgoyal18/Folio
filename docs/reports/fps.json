@@ -1,0 +1,57 @@
+{
+  "note": "Headless Chromium in a CPU-only container (WebGL via SwiftShader software rendering). Real GPUs are far faster; use these as relative numbers.",
+  "results": [
+    {
+      "mode": "svg",
+      "label": "idle hero (3s)",
+      "fps": 60,
+      "p50ms": 16.7,
+      "p95ms": 16.8
+    },
+    {
+      "mode": "svg",
+      "label": "scroll through hero collapse",
+      "fps": 50,
+      "p50ms": 16.7,
+      "p95ms": 33.4
+    },
+    {
+      "mode": "svg",
+      "label": "scroll rest of page",
+      "fps": 56,
+      "p50ms": 16.7,
+      "p95ms": 33.3
+    },
+    {
+      "mode": "svg",
+      "label": "WebGL canvas mounted",
+      "fps": "no"
+    },
+    {
+      "mode": "webgl",
+      "label": "idle hero (3s)",
+      "fps": 7,
+      "p50ms": 133.3,
+      "p95ms": 300
+    },
+    {
+      "mode": "webgl",
+      "label": "scroll through hero collapse",
+      "fps": 7,
+      "p50ms": 150,
+      "p95ms": 199.9
+    },
+    {
+      "mode": "webgl",
+      "label": "scroll rest of page",
+      "fps": 9,
+      "p50ms": 100,
+      "p95ms": 183.4
+    },
+    {
+      "mode": "webgl",
+      "label": "WebGL canvas mounted",
+      "fps": "no"
+    }
+  ]
+}

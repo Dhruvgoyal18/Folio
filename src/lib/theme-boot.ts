@@ -1,0 +1,3 @@
+/** Runs in <head> before paint (server-safe module: no "use client"). Keep in sync with prefs.ts keys. */
+const KEY = "dg01.prefs";
+export const themeBootScript = `(()=>{try{var p=JSON.parse(localStorage.getItem('${KEY}')||'{}');var d=document.documentElement;var s=window.__SITE_META__;var t=s?(localStorage.getItem('dg01.site.'+s.slug+'.theme')||s.theme):(p.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));d.dataset.theme=t;var m=p.motion||(matchMedia('(prefers-reduced-motion: reduce)').matches?'reduced':'full');d.dataset.motion=m;}catch(e){document.documentElement.dataset.theme='light';}})();`;
