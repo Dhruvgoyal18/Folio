@@ -24,9 +24,9 @@ CREATE_RATE_PER_DAY = "20"
 # 1. npx wrangler kv namespace create SITES
 # 2. paste the printed id below and uncomment the three lines
 # Without it the app still runs, but published sites live in memory and vanish.
-# [[kv_namespaces]]
-# binding = "SITES"
-# id = "<your-namespace-id>"
+ [[kv_namespaces]]
+ binding = "SITES"
+ id = "a9ca584de6a34daaba8eb385b9b2686f"
 
 # ── Secrets (never commit) ───────────────────────────────────────────────────────
 # Dashboard: Workers & Pages → folio → Settings → Variables and Secrets → Add (type: Secret)
