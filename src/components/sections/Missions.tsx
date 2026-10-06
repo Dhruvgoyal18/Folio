@@ -20,8 +20,10 @@ import { spring, stagger, tween } from "@/design/motion";
 function Card({ p, onOpen, index }: { p: ProjectView; onOpen: () => void; index: number }) {
   const site = useSite();
   const reduced = useReducedMotion();
-  const lead = p.metrics[0];
+  // the strongest number leads: a headline KPI if the case file has one
+  const lead = p.metrics.find((m) => m.kpi) ?? p.metrics[0];
   const src = projectSource(site.resume, p);
+  const result = p.source?.kind === "competition" ? site.resume.competitions.find((c) => c.id === p.source!.id)?.result : undefined;
   return (
     <TiltCard className="rounded-lg">
       <motion.button
@@ -45,9 +47,13 @@ function Card({ p, onOpen, index }: { p: ProjectView; onOpen: () => void; index:
         <p className="mt-3 text-[length:var(--fs--1)] leading-[var(--lh-normal)] text-ink-muted">{p.summary}</p>
         <div className="mt-auto pt-6">
           {lead ? (
-            <p className="display text-[length:var(--fs-4)] leading-none text-ink">
-              {formatMetric(lead)}
-              <span className="mono ml-2 align-middle text-[length:var(--fs--2)] font-normal tracking-normal text-ink-muted">{lead.label}</span>
+            <p className="flex flex-col gap-1.5">
+              <span className="display text-[length:var(--fs-4)] leading-none text-ink">{formatMetric(lead)}</span>
+              <span className="mono text-[length:var(--fs--2)] text-ink-muted">{lead.label}</span>
+            </p>
+          ) : result ? (
+            <p className="flex items-baseline gap-2">
+              <span className="display text-[length:var(--fs-3)] leading-none text-signal-ink">{result}</span>
             </p>
           ) : null}
           <div className="mt-4 flex items-center justify-between border-t border-rule pt-3">

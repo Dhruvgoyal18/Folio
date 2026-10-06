@@ -62,35 +62,40 @@ export function findMetrics(text: string): FoundMetric[] {
   for (const m of text.matchAll(/from\s+(\d[\d,]*(?:\.\d+)?)\s*(%?)\s+to\s+(\d[\d,]*(?:\.\d+)?)\s*(%?)/gi)) {
     const label = wordsBefore(text, m.index!) || wordsAfter(text, m.index! + m[0].length);
     const suffix = m[4] || m[2] || "";
-    add({ value: num(m[3]!), from: num(m[1]!), prefix: "", suffix, decimals: decimalsOf(m[3]!), label: label || "change", kpi: false, score: 6 }, m.index!, m.index! + m[0].length);
+    add({ value: num(m[3]!), from: num(m[1]!), prefix: "", suffix, decimals: decimalsOf(m[3]!), label: label || "change", kpi: false, kind: "change", score: 6 }, m.index!, m.index! + m[0].length);
   }
   // money: $1.2M, ₹40L, €300k
   for (const m of text.matchAll(/([$€£₹])\s?(\d[\d,]*(?:\.\d+)?)\s?([kKmMbB](?:n)?|L|Cr)?\+?/g)) {
     const a = m.index!, b = a + m[0].length;
-    add({ value: num(m[2]!), prefix: m[1]!, suffix: `${m[3] ?? ""}${m[0].endsWith("+") ? "+" : ""}`, decimals: decimalsOf(m[2]!), label: wordsAfter(text, b) || wordsBefore(text, a), kpi: false, score: 5 }, a, b);
+    add({ value: num(m[2]!), prefix: m[1]!, suffix: `${m[3] ?? ""}${m[0].endsWith("+") ? "+" : ""}`, decimals: decimalsOf(m[2]!), label: wordsAfter(text, b) || wordsBefore(text, a), kpi: false, kind: "money", score: 5 }, a, b);
   }
   // percentages (incl. "by 65%", "+27%", "99.93%")
   for (const m of text.matchAll(/([+~>]?)(\d[\d,]*(?:\.\d+)?)\s?%(\+?)/g)) {
     const a = m.index!, b = a + m[0].length;
     const before = text.slice(Math.max(0, a - 4), a).toLowerCase();
-    const down = /\b(reduc|cut|lower|decreas|drop|shrank|shrunk|saving|saved)\w*/i.test(text.slice(Math.max(0, a - 80), a));
+    // the verb nearest the number decides the direction: "cut review time and improved accuracy by 12%" is up
+    const win = text.slice(Math.max(0, a - 80), a);
+    const lastIdx = (re: RegExp) => Math.max(-1, ...[...win.matchAll(re)].map((x) => x.index!));
+    const down = lastIdx(/\b(reduc|cut|lower|decreas|drop|shrank|shrunk|saving|saved)\w*/gi) > lastIdx(/\b(improv|increas|boost|rais|grow|grew|lift|gain|enhanc|accelerat)\w*/gi);
     const prefix = m[1] || (/by\s$/.test(before) ? (down ? "−" : "+") : "");
     const label = wordsAfter(text, b) || wordsBefore(text, a);
-    add({ value: num(m[2]!), prefix, suffix: `%${m[3] ?? ""}`, decimals: decimalsOf(m[2]!), label, kpi: false, score: 4 }, a, b);
+    const reduces = prefix === "−" || /\b(reduc|cut|lower|decreas|drop|less|fewer|saving)\w*/i.test(label) || (down && !/accura|precision|recall|f1|score|reliab|uptime|coverage/i.test(label));
+    const kind = reduces ? "reduction" : prefix === "+" ? "lift" : "share";
+    add({ value: num(m[2]!), prefix, suffix: `%${m[3] ?? ""}`, decimals: decimalsOf(m[2]!), label, kpi: false, kind, score: kind === "reduction" ? 5 : 4 }, a, b);
   }
   // multiples: 3x, 10×
   for (const m of text.matchAll(/(\d+(?:\.\d+)?)\s?[x×]\b/g)) {
     const a = m.index!, b = a + m[0].length;
-    add({ value: num(m[1]!), prefix: "", suffix: "×", decimals: decimalsOf(m[1]!), label: wordsAfter(text, b) || wordsBefore(text, a), kpi: false, score: 4 }, a, b);
+    add({ value: num(m[1]!), prefix: "", suffix: "×", decimals: decimalsOf(m[1]!), label: wordsAfter(text, b) || wordsBefore(text, a), kpi: false, kind: "multiple", score: 5 }, a, b);
   }
   // magnitudes: 400k+, 5K+, 1.2M, 10,000+
   for (const m of text.matchAll(/(\d[\d,]*(?:\.\d+)?)\s?([kKmMbB])\b(\+?)|(\d{1,3}(?:,\d{3})+|\d{2,})(\+)/g)) {
     const a = m.index!, b = a + m[0].length;
-    if (m[1]) add({ value: num(m[1]), prefix: "", suffix: `${m[2]}${m[3] ?? ""}`, decimals: decimalsOf(m[1]), label: wordsAfter(text, b) || wordsBefore(text, a), kpi: false, score: 3 }, a, b);
+    if (m[1]) add({ value: num(m[1]), prefix: "", suffix: `${m[2]}${m[3] ?? ""}`, decimals: decimalsOf(m[1]), label: wordsAfter(text, b) || wordsBefore(text, a), kpi: false, kind: "count", score: 3 }, a, b);
     else if (m[4]) {
       const v = num(m[4]);
       if (v >= 1900 && v <= 2100) continue; // years
-      add({ value: v, prefix: "", suffix: "+", decimals: 0, label: wordsAfter(text, b) || wordsBefore(text, a), kpi: false, score: 3 }, a, b);
+      add({ value: v, prefix: "", suffix: "+", decimals: 0, label: wordsAfter(text, b) || wordsBefore(text, a), kpi: false, kind: "count", score: 3 }, a, b);
     }
   }
   return out.map((m) => ({ ...m, label: m.label.replace(/^(the|a|an)\s+/i, "").replace(/\s+(in|of)$/i, "").slice(0, 60) }));

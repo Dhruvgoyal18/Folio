@@ -5,6 +5,7 @@ import * as Slider from "@radix-ui/react-slider";
 import type { Genome, LockKey } from "@/genome/schema";
 import { CONCEPTS, LOCKABLE } from "@/genome/schema";
 import { CONCEPT_DEFS } from "@/genome/concepts";
+import { templateSwatches } from "@/genome/templates";
 import { PAIRINGS } from "@/genome/fonts";
 import type { SiteData } from "@/site/model";
 import type { PreviewMessage } from "@/site/SiteShell";
@@ -30,6 +31,9 @@ type Props = {
   onNext: () => void;
   history: { canUndo: boolean; undo: () => void };
 };
+
+/** Static swatches for the picker (the real palette is generated per seed). */
+const SWATCH = templateSwatches();
 
 export function DesignStep({ site, locks, onLocks, onRemix, onBack, onNext, history }: Props) {
   const g = site.genome;
@@ -92,23 +96,34 @@ export function DesignStep({ site, locks, onLocks, onRemix, onBack, onNext, hist
         </header>
 
         <fieldset className="flex flex-col gap-2">
-          <legend className="label mb-2">Concept</legend>
-          <div className="grid gap-1.5" role="radiogroup" aria-label="Concept">
+          <legend className="label mb-2 flex w-full items-center justify-between">
+            Template <a href="/templates" target="_blank" rel="noreferrer" className="text-[length:var(--fs--2)] font-normal text-ink-muted underline underline-offset-2 hover:text-ink">Browse all</a>
+          </legend>
+          <div className="grid grid-cols-2 gap-1.5" role="radiogroup" aria-label="Template">
             {CONCEPTS.map((c) => (
               <button
                 key={c}
                 type="button"
                 role="radio"
                 aria-checked={g.concept === c}
+                title={CONCEPT_DEFS[c].blurb}
                 onClick={() => g.concept !== c && onRemix({ concept: c })}
-                className={cn("rounded-md border px-3 py-2 text-left transition-colors", g.concept === c ? "border-ink bg-paper-raised shadow-[inset_3px_0_0_var(--c-signal-ink)]" : "border-rule hover:border-ink/50")}
+                className={cn("flex items-start gap-2 rounded-md border px-2.5 py-2 text-left transition-colors", g.concept === c ? "border-ink bg-paper-raised shadow-[inset_3px_0_0_var(--c-signal-ink)]" : "border-rule hover:border-ink/50")}
                 data-testid={`concept-${c}`}
               >
-                <span className="block text-[length:var(--fs-0)] font-medium">{CONCEPT_DEFS[c].label}</span>
-                <span className="block text-[length:var(--fs--2)] leading-snug text-ink-muted">{CONCEPT_DEFS[c].blurb}</span>
+                <span aria-hidden className="mt-0.5 flex shrink-0 overflow-hidden rounded-full border border-rule">
+                  {SWATCH[c].map((col) => (
+                    <span key={col} className="block h-3.5 w-2" style={{ background: col }} />
+                  ))}
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[length:var(--fs--1)] font-medium leading-tight">{CONCEPT_DEFS[c].label}</span>
+                  <span className="block truncate text-[length:var(--fs--2)] leading-snug text-ink-muted">{CONCEPT_DEFS[c].bestFor}</span>
+                </span>
               </button>
             ))}
           </div>
+          <p className="text-[length:var(--fs--2)] text-ink-muted">{CONCEPT_DEFS[g.concept].blurb}</p>
         </fieldset>
 
         <div className="flex gap-2">

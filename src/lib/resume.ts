@@ -47,14 +47,82 @@ export function allHighlights(r: Resume): OwnedHighlight[] {
   return out;
 }
 
-export type Kpi = Metric & { highlightId: string; ownerId: string; ownerLabel: string; ownerShort: string; sourceText: string };
+export type MetricKind = NonNullable<Metric["kind"]>;
+
+const DOWN_WORDS = /\b(reduc\w*|cut\w*|lower\w*|decreas\w*|drop\w*|shr[iau]nk\w*|sav(?:e|ed|ing|ings)|less|fewer|latency|downtime|churn|cost)\b/i;
+
+/** How a metric should be read (and drawn). Explicit `kind` wins; otherwise inferred from its shape and words. */
+export function metricKind(m: Pick<Metric, "kind" | "from" | "prefix" | "suffix" | "label">, sourceText = ""): MetricKind {
+  if (m.kind) return m.kind;
+  if (m.from !== undefined) return "change";
+  if (/[$€£₹]/.test(m.prefix)) return "money";
+  if (m.suffix.startsWith("×") || /^x$/i.test(m.suffix)) return "multiple";
+  if (m.suffix.includes("%")) {
+    if (m.prefix === "−" || m.prefix === "-" || DOWN_WORDS.test(m.label)) return "reduction";
+    if (m.prefix === "+") return "lift";
+    if (DOWN_WORDS.test(sourceText) && /\bby\b/i.test(sourceText) && !/accura|precision|recall|f1|score|reliab|uptime|coverage|satisf/i.test(m.label)) return "reduction";
+    return "share";
+  }
+  return "count";
+}
+
+/** Strength of a kind for picking and ordering headline numbers. */
+export const KIND_WEIGHT: Record<MetricKind, number> = { change: 6, money: 5, reduction: 5, multiple: 5, lift: 4, share: 3, count: 3 };
+
+export type Kpi = Metric & {
+  kind: MetricKind;
+  highlightId: string;
+  ownerId: string;
+  ownerLabel: string;
+  ownerShort: string;
+  sourceText: string;
+  /** what the number is about: the case file it belongs to, else the role's group, else the role */
+  context: string;
+};
+
+/** "peak memory reduction" → "Peak memory reduction" (labels are lifted from bullets, often lower-case). */
+export function sentenceCase(s: string): string {
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+}
 
 export function kpis(r: Resume): Kpi[] {
-  return allHighlights(r).flatMap((h) =>
+  const projectOf = new Map<string, string>();
+  for (const p of r.projects) for (const id of [...p.highlightIds, ...p.highlights.map((h) => h.id)]) if (!projectOf.has(id)) projectOf.set(id, p.title);
+  const out = allHighlights(r).flatMap((h, hi) =>
     h.metrics
       .filter((m) => m.kpi)
-      .map((m) => ({ ...m, highlightId: h.id, ownerId: h.ownerId, ownerLabel: h.ownerLabel, ownerShort: h.ownerShort, sourceText: h.text })),
+      .map((m, mi) => {
+        const kind = metricKind(m, h.text);
+        const role = h.ownerKind === "experience" ? r.experience.find((e) => e.id === h.ownerId)?.role : undefined;
+        const context = projectOf.get(h.id) ?? h.group ?? role ?? h.ownerShort;
+        return { k: { ...m, kind, highlightId: h.id, ownerId: h.ownerId, ownerLabel: h.ownerLabel, ownerShort: h.ownerShort, sourceText: h.text, context }, order: hi * 10 + mi };
+      }),
   );
+  return out
+    .sort((a, b) => (a.k.kpiRank ?? 100) - (b.k.kpiRank ?? 100) || (a.k.kpiRank !== undefined ? 0 : KIND_WEIGHT[b.k.kind] - KIND_WEIGHT[a.k.kind]) || a.order - b.order)
+    .map((x) => x.k);
+}
+
+/**
+ * Derived, honest arithmetic for a reduction: 99.93% less → "≈1,400× less". Only shown when the
+ * remainder is small enough for the ratio to be the clearer way to say it.
+ */
+export function reductionRatio(value: number): string | null {
+  if (value < 75 || value >= 100) return null;
+  const ratio = 100 / (100 - value);
+  const sig = ratio >= 100 ? Math.round(ratio / 100) * 100 : ratio >= 10 ? Math.round(ratio) : Math.round(ratio * 10) / 10;
+  return `≈${sig.toLocaleString("en-US")}×`;
+}
+
+/** Short proof points for a hero: school, top competition results, medals. Pure data, nothing invented. */
+export function credentials(r: Resume, max = 3): string[] {
+  const out: string[] = [];
+  const edu = r.education[0];
+  if (edu) out.push(edu.short ?? edu.institution);
+  const strong = /\b(gold|winner|won|1st|first|champion|silver|2nd|bronze|3rd|finalist|top\s?\d+)/i;
+  for (const c of r.competitions) if (strong.test(c.result)) out.push(`${c.result}, ${c.short ?? c.name}`);
+  for (const a of r.awards) if (a.medal === "gold" || a.medal === "silver") out.push(a.title);
+  return [...new Set(out)].slice(0, max);
 }
 
 export function formatMetric(m: Pick<Metric, "value" | "prefix" | "suffix" | "decimals">, value = m.value): string {

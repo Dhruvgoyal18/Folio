@@ -1,6 +1,7 @@
 import type { Resume } from "@/data/schema";
 import type { Genome, SectionId } from "@/genome/schema";
 import { chapterOrder } from "@/genome/generate";
+import { CONCEPT_DEFS } from "@/genome/concepts";
 import type { SkillGraph } from "@/lib/skill-graph-types";
 import { citeTargets, currentRole, firstName, kpis, projectsWithHighlights, skillUsage } from "@/lib/resume";
 
@@ -37,7 +38,7 @@ export function buildModel(site: SiteData) {
   };
   const order = chapterOrder(g).filter((id) => hasContent[id]);
   const chapters: Chapter[] = [
-    { id: "launch", code: chapterCode(g.copy.codeStyle, 1), label: g.concept === "terminal" ? "init" : g.concept === "editorial" ? "Cover" : "Launch" },
+    { id: "launch", code: chapterCode(g.copy.codeStyle, 1), label: CONCEPT_DEFS[g.concept].launchLabel },
     ...order.map((id, i) => ({ id, code: chapterCode(g.copy.codeStyle, i + 2), label: g.copy.sections[id].eyebrow.split(/[&,]/)[0]!.trim() })),
   ];
   return {

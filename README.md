@@ -15,6 +15,40 @@ Two people with similar résumés don't get the same site. Every site is generat
 
 Owners can remix the genome, lock the parts they like, change the energy, and pick a default theme.
 
+## Templates
+
+There are nine templates, in `/templates` and in the studio's design step:
+
+| Template | Feel | Best for |
+| --- | --- | --- |
+| Mission Control | drafting paper, telemetry, skill constellation | engineers, data & ML |
+| Editorial | magazine feature, serif, calm | product, design, writing |
+| Terminal | phosphor, monospace, quick | backend, infra, security |
+| Minimal | Swiss white space, one accent | anyone; the safest for recruiters |
+| Noir | dark, light serif, champagne accents | senior leaders, founders |
+| Bold | brutalist poster, thick rules, hard shadows | creatives, growth |
+| Aurora | gradient light, glass cards, rounded | product engineers, AI builders |
+| Scholar | academic paper, abstract and keywords | researchers, grad applicants |
+| Blueprint | blueprint blue, dashed linework | hardware, civil, systems |
+
+Each template is a `ConceptDef` in `src/genome/concepts.ts`, which sets its palettes, fonts, heroes, layouts and copy voice. It has a hero layout in `Hero.tsx`, a CSS signature in `globals.css`, and a curated starting seed in `src/genome/templates.ts`.
+
+The gallery previews any template live. **Remix** re-rolls the design inside that template, and **Use this design** opens `/create?template=<id>&seed=<n>`.
+
+## Impact numbers
+
+Each metric has a `kind`: `change`, `share`, `reduction`, `lift`, `count`, `money` or `multiple`. Extraction infers it from the wording, or it can be set explicitly. The kind decides how the number is drawn:
+
+| Kind | Example | Drawn as |
+| --- | --- | --- |
+| change | 68% → 87% | before/after bars |
+| share | 95% reliability | a 0–100 meter |
+| reduction | 99.93% less memory | the remainder, plus an honest ratio ("≈1,400× less") |
+| lift | +27% | baseline vs lifted |
+| count | 20 workflows | pips for small counts, the full figure for big ones |
+
+Every card shows the case file it belongs to, an optional `note`, and the bullet it was quoted from. `kpiRank` orders the cards.
+
 Dhruv Goyal's original "Mission Log DG-01" design is reproduced exactly as a genome. It is the built-in showcase at `/u/dhruv-goyal`.
 
 ```
@@ -31,7 +65,7 @@ src/
   components/     sections/ (each with genome variants) · visuals/ (Contours, Flowfield) · three/ (Constellation) · chat/ · primitives/ · ui/
 functions/        index.ts (HOME_SITE) · u/[slug].ts (inject published site) · api/[[path]].ts (→ src/server/api.ts)
 scripts/          serve (local twin of Cloudflare) · publish-sample · capture-platform · capture · lighthouse.sh · chat-eval · fps · build-tokens · lint-tokens
-tests/unit/       Vitest — 108 tests      e2e/   Playwright — 72 tests (desktop + Pixel 7)
+tests/unit/       Vitest — 154 tests      e2e/   Playwright — 126 tests (desktop + Pixel 7), incl. axe on all 9 templates
 ```
 
 ## Quick start

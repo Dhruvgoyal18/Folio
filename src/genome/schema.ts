@@ -6,8 +6,8 @@ import { z } from "zod";
  * combination keeps the platform's accessibility and performance guarantees.
  */
 
-export const CONCEPTS = ["mission", "editorial", "terminal"] as const;
-export const HEROES = ["constellation", "contours", "flowfield"] as const;
+export const CONCEPTS = ["mission", "editorial", "terminal", "minimal", "noir", "brutalist", "aurora", "scholar", "blueprint"] as const;
+export const HEROES = ["constellation", "contours", "flowfield", "aurora", "monogram"] as const;
 export const MOTIONS = ["calm", "snappy", "cinematic"] as const;
 export const DENSITIES = ["airy", "compact"] as const;
 export const RADII = ["sharp", "soft", "round"] as const;
@@ -35,12 +35,12 @@ export const GenomeSchema = z.object({
   version: z.literal(1),
   seed: z.number().int().nonnegative().max(2 ** 32),
   concept: z.enum(CONCEPTS),
-  paletteRecipe: z.enum(["paper", "gallery", "phosphor", "studio"]),
+  paletteRecipe: z.enum(["paper", "gallery", "phosphor", "studio", "noir", "blueprint", "pastel", "poster"]),
   accentHue: z.number().min(0).max(360),
   paperHue: z.number().min(0).max(360),
   palette: z.object({ light: PaletteSchema, dark: PaletteSchema }),
   defaultTheme: z.enum(["light", "dark"]),
-  fonts: z.enum(["grotesk", "editorial", "swiss", "terminal", "neo", "technical"]),
+  fonts: z.enum(["grotesk", "editorial", "swiss", "terminal", "neo", "technical", "minimal", "noir", "poster", "modern", "scholar", "blueprint"]),
   motion: z.enum(MOTIONS),
   hero: z.enum(HEROES),
   density: z.enum(DENSITIES),

@@ -4,70 +4,22 @@ import { seedResume } from "@/data/seed";
 import { generateGenome } from "@/genome/generate";
 import { CONCEPT_DEFS } from "@/genome/concepts";
 import { PAIRINGS, stack } from "@/genome/fonts";
-import type { Concept, Genome } from "@/genome/schema";
+import { CONCEPTS, type Concept, type Genome } from "@/genome/schema";
+import { TEMPLATE_SEEDS, templateGenome } from "@/genome/templates";
+import { TemplateMock } from "@/components/platform/TemplateMock";
 import { SHOWCASE_SLUG } from "@/site/showcase";
 import { ArrowUpRight } from "@/components/ui/icons";
 import { ThemeSwitch } from "@/components/ui/ThemeSwitch";
 
 /** Same résumé, three genomes — computed at build time, rendered as specimen cards. */
+/** Six of the nine templates on the landing page; the gallery has them all. */
+const SHOWCASE: Concept[] = ["mission", "minimal", "aurora", "noir", "brutalist", "scholar"];
+
 const DEMOS: Array<{ concept: Concept; seed: number }> = [
   { concept: "mission", seed: 11 },
   { concept: "editorial", seed: 23 },
   { concept: "terminal", seed: 37 },
 ];
-
-function Specimen({ g, index }: { g: Genome; index: number }) {
-  const p = g.palette[g.defaultTheme];
-  const f = PAIRINGS[g.fonts];
-  const name = seedResume.profile.name;
-  return (
-    <li className="specimen" style={{ ["--i" as string]: index }}>
-      <Link
-        href={`/site?demo=${g.concept}&seed=${g.seed}`}
-        className="group block overflow-hidden rounded-lg border border-rule no-underline shadow-paper transition-transform duration-[var(--dur-base)] ease-[var(--ease-out)] hover:-translate-y-1"
-        aria-label={`Open the ${CONCEPT_DEFS[g.concept].label} version of the example site`}
-      >
-        <div className="flex aspect-[4/3] flex-col justify-between p-5" style={{ background: p.paper, color: p.ink }}>
-          <div className="flex items-center justify-between text-[12px]" style={{ fontFamily: stack(f.mono), color: p["ink-muted"] }}>
-            <span>{g.copy.kicker}</span>
-            <span>{g.copy.assistant}</span>
-          </div>
-          <div>
-            <p
-              className="leading-[0.9]"
-              style={{
-                fontFamily: stack(f.display),
-                fontWeight: f.displayWeight,
-                letterSpacing: f.tracking,
-                textTransform: f.uppercaseHero ? "uppercase" : "none",
-                fontSize: "clamp(1.6rem, 3.2vw, 2.4rem)",
-              }}
-            >
-              {name}
-            </p>
-            <p className="mt-2 line-clamp-2 text-[13px]" style={{ fontFamily: stack(f.text), color: p["ink-muted"] }}>
-              {g.copy.sections.trajectory.title}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            {(["signal", "ink", "paper-sunk", "rule"] as const).map((k) => (
-              <span key={k} className="h-4 w-4 rounded-full border" style={{ background: p[k], borderColor: p.rule }} aria-hidden="true" />
-            ))}
-            <span className="ml-auto rounded-full px-3 py-1 text-[12px]" style={{ background: p["signal-ink"], color: p["on-signal"], fontFamily: stack(f.mono) }}>
-              {g.copy.heroCta}
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center justify-between border-t border-rule bg-paper-raised px-5 py-3">
-          <span className="text-[length:var(--fs--1)] font-medium">{CONCEPT_DEFS[g.concept].label}</span>
-          <span className="mono flex items-center gap-1 text-[length:var(--fs--2)] text-ink-muted group-hover:text-ink">
-            {f.label} · {g.motion} <ArrowUpRight size={12} />
-          </span>
-        </div>
-      </Link>
-    </li>
-  );
-}
 
 /** Hero visual: the three example genomes as a fanned stack of mini sites. */
 function Fan({ genomes }: { genomes: Genome[] }) {
@@ -118,7 +70,7 @@ const PROMISES = [
   { t: "Grounded assistant", d: "Visitors can ask about your experience. It answers only from your résumé, cites the section it used, and declines everything else." },
   { t: "Accessible by construction", d: "Every generated palette is checked against WCAG AA before it can ship. Keyboard, screen-reader and reduced-motion support come built in." },
   { t: "Fast everywhere", d: "Static pages at the edge, fonts that only load when used, and 3D only when the device can handle it." },
-  { t: "Yours to change", d: "Edit content or redesign at any time with your edit link, or delete the site entirely." },
+  { t: "Yours to change", d: "Start from any of nine templates, remix it, edit content or redesign at any time with your edit link — or delete the site entirely." },
 ];
 
 export default function Landing() {
@@ -132,7 +84,8 @@ export default function Landing() {
         </Link>
         <nav aria-label="Primary" className="flex items-center gap-1">
           <Link href={`/u/${SHOWCASE_SLUG}`} className="btn btn-ghost no-underline">Example</Link>
-          <Link href="/design-system" className="btn btn-ghost no-underline max-sm:hidden">Design system</Link>
+          <Link href="/templates" className="btn btn-ghost no-underline" data-testid="nav-templates">Templates</Link>
+          <Link href="/design-system" className="btn btn-ghost no-underline max-lg:hidden">Design system</Link>
           <ThemeSwitch />
           <Link href="/create" className="btn btn-primary ml-1 no-underline">Create yours</Link>
         </nav>
@@ -162,16 +115,33 @@ export default function Landing() {
 
         <section aria-labelledby="variety" className="border-y border-rule bg-paper-sunk">
           <div className="mx-auto max-w-[1200px] px-[var(--sp-gutter)] py-14">
-            <p className="kicker">Same PDF, three genomes</p>
-            <h2 id="variety" className="display mt-2 text-[length:var(--fs-3)]">One résumé, three different sites.</h2>
+            <p className="kicker">Same PDF, nine templates</p>
+            <h2 id="variety" className="display mt-2 text-[length:var(--fs-3)]">One résumé, many different sites.</h2>
             <p className="mt-3 max-w-[60ch] text-ink-muted">
-              These all come from the same PDF. Each design is generated from a seed, with its own palette, type pairing, hero, section layouts, motion and wording. Open one to see the whole site.
+              These all come from the same PDF. Each template is a design family; within it, every site gets its own palette, type pairing, hero, section layouts, motion and wording. Open one to see the whole site.
             </p>
-            <ul className="mt-8 grid gap-5 md:grid-cols-3" role="list">
-              {demos.map((g, i) => (
-                <Specimen key={g.concept} g={g} index={i} />
+            <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" role="list">
+              {SHOWCASE.map((c, i) => (
+                <li key={c} className="specimen" style={{ ["--i" as string]: i }}>
+                  <Link
+                    href={`/site?demo=${c}&seed=${TEMPLATE_SEEDS[c]}`}
+                    className="group block overflow-hidden rounded-lg border border-rule no-underline shadow-paper transition-transform duration-[var(--dur-base)] ease-[var(--ease-out)] hover:-translate-y-1"
+                    aria-label={`Open the ${CONCEPT_DEFS[c].label} version of the example site`}
+                  >
+                    <TemplateMock g={templateGenome(seedResume, c)} resume={seedResume} className="aspect-[4/3] w-full overflow-hidden" />
+                    <div className="flex items-center justify-between border-t border-rule bg-paper-raised px-5 py-3">
+                      <span className="text-[length:var(--fs--1)] font-medium">{CONCEPT_DEFS[c].label}</span>
+                      <span className="mono flex items-center gap-1 text-[length:var(--fs--2)] text-ink-muted group-hover:text-ink">
+                        {CONCEPT_DEFS[c].bestFor.split(/[,—]/)[0]!.trim()} <ArrowUpRight size={12} />
+                      </span>
+                    </div>
+                  </Link>
+                </li>
               ))}
             </ul>
+            <Link href="/templates" className="btn btn-outline mt-8 no-underline" data-testid="all-templates">
+              Browse all {CONCEPTS.length} templates <ArrowUpRight size={14} />
+            </Link>
           </div>
         </section>
 

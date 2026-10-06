@@ -16,7 +16,7 @@ export function resumeContext(r: Resume): string {
   const lines: string[] = [];
   const p = r.profile;
   lines.push(`[profile] ${p.name}. ${p.headline}${p.headlineDerived ? " (summary line written for this site from the resume)" : ""}.${p.currentRole ? ` Current role: ${p.currentRole}.` : ""}${p.location ? ` Location: ${p.location}.` : ""}`);
-  if (p.summary) lines.push(`[profile] Summary from the resume: ${p.summary}`);
+  if (p.summary) lines.push(`[profile] ${p.summaryDerived ? "Summary (written for this site from the resume's bullets)" : "Summary from the resume"}: ${p.summary}`);
   const contact = [
     p.email ? `Email ${p.email}` : "",
     p.phone ? `phone ${p.phone}` : "",

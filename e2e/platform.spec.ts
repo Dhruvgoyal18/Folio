@@ -12,9 +12,10 @@ test.describe("landing", () => {
     await expect(page.getByRole("heading", { level: 1 })).toContainText("nobody else has");
     await expect(page.getByTestId("cta-create")).toHaveAttribute("href", "/create");
     const specimens = page.locator(".specimen a");
-    await expect(specimens).toHaveCount(3);
+    await expect(specimens).toHaveCount(6);
     const hrefs = await specimens.evaluateAll((as) => as.map((a) => a.getAttribute("href")));
-    expect(new Set(hrefs).size).toBe(3);
+    expect(new Set(hrefs).size).toBe(6);
+    await expect(page.getByTestId("all-templates")).toHaveAttribute("href", "/templates");
     c.expectClean();
   });
   test("axe: landing and create have no WCAG A/AA violations", async ({ page }) => {

@@ -32,7 +32,8 @@ function RoleCard({ e, index }: { e: Experience; index: number }) {
   const [open, setOpen] = useState(e.end === null);
   const right = index % 2 === 1;
   const highlights = e.groups.flatMap((g) => g.highlights);
-  const metrics = highlights.flatMap((h) => h.metrics);
+  // at most three chips, headline numbers first — the full log is one click away
+  const metrics = highlights.flatMap((h) => h.metrics).sort((a, b) => Number(b.kpi) - Number(a.kpi)).slice(0, 3);
   const skills = [...new Set(highlights.flatMap((h) => h.skills))];
   const panelId = `${e.id}-log`;
 
@@ -87,7 +88,7 @@ function RoleCard({ e, index }: { e: Experience; index: number }) {
           {metrics.length ? (
             <div className="mt-4 flex flex-wrap gap-2">
               {metrics.map((m) => (
-                <Chip key={m.label} tone="signal">
+                <Chip key={`${m.label}-${m.value}`} tone="signal">
                   {formatChange(m)} {m.label}
                 </Chip>
               ))}
@@ -213,7 +214,9 @@ function LedgerRow({ e }: { e: Experience }) {
 
 export function Trajectory() {
   const site = useSite();
-  const ROLES = experienceChronological(site.resume);
+  // recruiters read newest first: the current role leads, the earliest closes the list
+  const ROLES = [...experienceChronological(site.resume)].sort((a, b) => (b.end ?? "9999-12").localeCompare(a.end ?? "9999-12") || b.start.localeCompare(a.start));
+  const edu = site.resume.education[0];
   const listRef = useRef<HTMLOListElement>(null);
   const reduced = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: listRef, offset: ["start 75%", "end 55%"] });
@@ -224,7 +227,7 @@ export function Trajectory() {
       <section id="trajectory" aria-labelledby="trajectory-title" className="relative px-gutter py-section">
         <ChapterHeader id="trajectory" />
         <ol className="border-t border-ink">
-          {[...ROLES].reverse().map((e) => (
+          {ROLES.map((e) => (
             <LedgerRow key={e.id} e={e} />
           ))}
         </ol>
@@ -245,9 +248,11 @@ export function Trajectory() {
             <RoleCard key={e.id} e={e} index={i} />
           ))}
         </ol>
-        <Reveal className="relative mt-16 pl-8 md:pl-0 md:text-center">
-          <p className="mono text-[length:var(--fs--1)] text-ink-muted">▲ Next waypoint: unwritten.</p>
-        </Reveal>
+        {edu ? (
+          <Reveal className="relative mt-16 pl-8 md:pl-0 md:text-center">
+            <p className="mono text-[length:var(--fs--1)] text-ink-muted">▼ Launched from {edu.short ?? edu.institution}</p>
+          </Reveal>
+        ) : null}
       </div>
     </section>
   );

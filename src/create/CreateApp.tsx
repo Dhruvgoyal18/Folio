@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import type { Draft } from "@/extract/draft";
 import { generateGenome } from "@/genome/generate";
-import { LOCKABLE, type Genome, type LockKey } from "@/genome/schema";
+import { CONCEPTS, LOCKABLE, type Genome, type LockKey } from "@/genome/schema";
+import { CONCEPT_DEFS } from "@/genome/concepts";
 import { computeSkillGraph } from "@/lib/skill-graph";
 import type { SiteData } from "@/site/model";
 import { loadForEdit } from "./client";
@@ -33,6 +34,18 @@ export function CreateApp() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [booting, setBooting] = useState(true);
   const heading = useRef<HTMLDivElement>(null);
+  // /create?template=<concept>[&seed=<n>] — started from the template gallery: the first design uses that template
+  const template = useRef<{ concept: Genome["concept"]; seed?: number } | null>(null);
+  useEffect(() => {
+    const q = new URLSearchParams(location.search);
+    const t = q.get("template");
+    if (t && (CONCEPTS as readonly string[]).includes(t)) {
+      const seed = Number(q.get("seed"));
+      template.current = { concept: t as Genome["concept"], ...(Number.isFinite(seed) && seed > 0 ? { seed } : {}) };
+      setTemplateLabel(CONCEPT_DEFS[t as Genome["concept"]].label);
+    }
+  }, []);
+  const [templateLabel, setTemplateLabel] = useState<string | null>(null);
 
   // Work in progress survives a reload (this tab only). Restored once, saved on every change.
   const SAVE_KEY = "folio.studio";
@@ -43,9 +56,12 @@ export function CreateApp() {
       if (raw) {
         const s = JSON.parse(raw) as { step: Step; draft: Draft | null; meta: typeof meta; genome: Genome | null; locks: LockKey[] };
         if (s.draft) {
+          const fromTemplate = new URLSearchParams(location.search).has("template");
           setDraft(s.draft);
           setMeta(s.meta ?? { unplaced: [] });
-          setGenome(s.genome);
+          // arriving from the template gallery with work in progress: keep the content, redesign with the template
+          setGenome(fromTemplate ? null : s.genome);
+          if (fromTemplate && (s.step === "design" || s.step === "publish")) s.step = "review";
           setLocks(s.locks ?? []);
           setStep(s.step === "upload" ? "review" : s.step);
         }
@@ -117,7 +133,7 @@ export function CreateApp() {
 
   const toDesign = () => {
     if (!resume) return;
-    if (!genome) setGenome(generateGenome(resume, { seed: randomSeed() }));
+    if (!genome) setGenome(generateGenome(resume, { seed: template.current?.seed ?? randomSeed(), concept: template.current?.concept }));
     setStep("design");
   };
 
@@ -217,6 +233,12 @@ export function CreateApp() {
 
       <main id="main" className="mx-auto max-w-[1440px] px-[var(--sp-gutter)] py-8 sm:py-10" ref={heading} data-step={step}>
         {booting ? <p aria-busy="true" className="text-ink-muted">Loading…</p> : null}
+        {!booting && templateLabel && (step === "upload" || step === "review") ? (
+          <p className="mb-5 inline-flex items-center gap-2 rounded-pill border border-rule bg-paper-raised px-3 py-1.5 text-[length:var(--fs--1)]" data-testid="template-banner">
+            <span className="inline-block h-2 w-2 rounded-full bg-signal" /> Template: <strong className="font-semibold">{templateLabel}</strong>
+            <span className="text-ink-muted">— your site starts with this design. You can still change it.</span>
+          </p>
+        ) : null}
         {!booting && step === "upload" ? (
           <UploadStep
             onDone={(r) => {

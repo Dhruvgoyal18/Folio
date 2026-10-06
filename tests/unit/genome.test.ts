@@ -36,9 +36,9 @@ describe("genome", () => {
     const gs = Array.from({ length: 40 }, (_, i) => generateGenome(seedResume, { seed: i * 101 + 3 }));
     const sig = (g: (typeof gs)[number]) => [g.concept, g.fonts, g.hero, g.accentHue, g.sections.telemetry, g.sections.missions, g.order].join("|");
     expect(new Set(gs.map(sig)).size).toBeGreaterThan(30);
-    expect(new Set(gs.map((g) => g.concept)).size).toBe(3);
+    expect(new Set(gs.map((g) => g.concept)).size).toBeGreaterThanOrEqual(6);
     expect(new Set(gs.map((g) => g.fonts)).size).toBeGreaterThanOrEqual(4);
-    expect(new Set(gs.map((g) => g.hero)).size).toBe(3);
+    expect(new Set(gs.map((g) => g.hero)).size).toBeGreaterThanOrEqual(4);
   });
   it("every generated genome passes the publish gate without repairs", () => {
     for (let i = 0; i < 200; i++) {

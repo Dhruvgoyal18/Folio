@@ -72,7 +72,10 @@ describe("facts match the source PDF", () => {
 describe("derived views", () => {
   it("produces six telemetry KPIs, each traceable to a bullet", () => {
     const k = kpis(resume);
-    expect(k.map((m) => formatMetric(m))).toEqual(["87%", "20+", "95%+", "400k+", "+27%", "99.93%"]);
+    // ordered by kpiRank: a change, a share, a reduction, a lift, then the counts
+    expect(k.map((m) => formatMetric(m))).toEqual(["87%", "95%+", "99.93%", "+65%", "20+", "400k+"]);
+    expect(k.map((m) => m.kind)).toEqual(["change", "share", "reduction", "lift", "count", "count"]);
+    expect(k[0]!.context).toBe("Text-to-SQL Copilot");
     for (const x of k) expect(x.sourceText.length).toBeGreaterThan(20);
     expect(k[0]!.from).toBe(68);
   });
@@ -93,7 +96,7 @@ describe("derived views", () => {
   });
   it("domain evidence counts bullets", () => {
     const d = domainEvidence(resume);
-    expect(d.find((x) => x.domain === "agents-llm")!.bullets).toBeGreaterThan(3);
+    expect(d.find((x) => x.domain === "genai")!.bullets).toBeGreaterThan(3);
     expect(d.reduce((a, b) => a + b.skills, 0)).toBe(resume.skills.length);
   });
   it("cite targets are unique", () => {

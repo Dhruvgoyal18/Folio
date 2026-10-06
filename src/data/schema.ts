@@ -35,6 +35,15 @@ export const MetricSchema = z.object({
   label: z.string().min(1),
   /** show in the Telemetry / numbers section */
   kpi: z.boolean().default(false),
+  /**
+   * What kind of number this is — decides how it is drawn (before→after bars, a 0–100 meter,
+   * a "×-less" ratio…). Inferred from the wording when absent; see lib/resume metricKind().
+   */
+  kind: z.enum(["change", "share", "reduction", "lift", "count", "money", "multiple"]).optional(),
+  /** fine print shown under the figure, e.g. how it was measured ("5-fold cross-validation") */
+  note: z.string().max(80).optional(),
+  /** order among KPIs (lower first); unranked KPIs follow, strongest kinds first */
+  kpiRank: z.number().int().min(0).max(99).optional(),
 });
 export type Metric = z.infer<typeof MetricSchema>;
 
@@ -137,8 +146,9 @@ export const ResumeSchema = z
       callsign: z.string().min(1),
       headline: z.string().min(1),
       headlineDerived: z.boolean(),
-      /** the resume's own summary/objective, verbatim */
+      /** the resume's own summary/objective, verbatim — or composed from bullets when summaryDerived */
       summary: z.string().optional(),
+      summaryDerived: z.boolean().optional(),
       currentRole: z.string().default(""),
       location: z.string().optional(),
       email: z.string().email().optional(),

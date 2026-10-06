@@ -25,6 +25,12 @@ export const PAIRINGS = {
   terminal: { label: "Terminal", display: "jetbrains-mono", text: "ibm-plex-sans", mono: "jetbrains-mono", displayWeight: 700, tracking: "-0.04em", uppercaseHero: true },
   neo: { label: "Neo-grotesk", display: "syne", text: "manrope", mono: "jetbrains-mono", displayWeight: 800, tracking: "-0.03em", uppercaseHero: true },
   technical: { label: "Technical", display: "space-grotesk", text: "inter", mono: "jetbrains-mono", displayWeight: 700, tracking: "-0.04em", uppercaseHero: false },
+  minimal: { label: "Minimal sans", display: "inter-tight", text: "inter", mono: "jetbrains-mono", displayWeight: 600, tracking: "-0.035em", uppercaseHero: false },
+  noir: { label: "Noir serif", display: "fraunces", text: "inter", mono: "jetbrains-mono", displayWeight: 300, tracking: "-0.02em", uppercaseHero: false },
+  poster: { label: "Poster", display: "syne", text: "space-grotesk", mono: "jetbrains-mono", displayWeight: 800, tracking: "-0.045em", uppercaseHero: true },
+  modern: { label: "Modern", display: "manrope", text: "inter", mono: "jetbrains-mono", displayWeight: 800, tracking: "-0.04em", uppercaseHero: false },
+  scholar: { label: "Book serif", display: "newsreader", text: "newsreader", mono: "jetbrains-mono", displayWeight: 500, tracking: "-0.015em", uppercaseHero: false },
+  blueprint: { label: "Drafting", display: "space-grotesk", text: "ibm-plex-sans", mono: "jetbrains-mono", displayWeight: 600, tracking: "-0.02em", uppercaseHero: true },
 } as const satisfies Record<string, { label: string; display: FamilyId; text: FamilyId; mono: FamilyId; displayWeight: number; tracking: string; uppercaseHero: boolean }>;
 export type PairingId = keyof typeof PAIRINGS;
 export const PAIRING_IDS = Object.keys(PAIRINGS) as PairingId[];

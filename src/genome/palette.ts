@@ -8,7 +8,7 @@ import { contrast, ensureContrast, hexToRgba, oklch } from "./color";
  */
 
 export type Palette = Record<ColorRole, string>;
-export type PaletteRecipe = "paper" | "gallery" | "phosphor" | "studio";
+export type PaletteRecipe = "paper" | "gallery" | "phosphor" | "studio" | "noir" | "blueprint" | "pastel" | "poster";
 export type Mode = "light" | "dark";
 
 type Spec = {
@@ -45,6 +45,26 @@ const RECIPES: Record<PaletteRecipe, Record<Mode, Spec>> = {
   studio: {
     light: { paper: [0.96, 0.02], raised: 0.93, sunk: 0.905, ink: [0.21, 0.03], muted: 0.47, faint: 0.65, signal: [0.6, 0.2], signalInk: 0.5, teal: [0.44, 0.08], neutralHue: "accent" },
     dark: { paper: [0.18, 0.02], raised: 0.22, sunk: 0.15, ink: [0.94, 0.02], muted: 0.75, faint: 0.56, signal: [0.74, 0.17], signalInk: 0.74, teal: [0.78, 0.09], neutralHue: "accent" },
+  },
+  // ink-black velvet and ivory, with a metallic accent (Noir)
+  noir: {
+    light: { paper: [0.972, 0.008], raised: 0.95, sunk: 0.93, ink: [0.17, 0.008], muted: 0.46, faint: 0.66, signal: [0.6, 0.11], signalInk: 0.48, teal: [0.44, 0.05], neutralHue: "paper" },
+    dark: { paper: [0.135, 0.006], raised: 0.17, sunk: 0.105, ink: [0.93, 0.014], muted: 0.73, faint: 0.5, signal: [0.8, 0.11], signalInk: 0.8, teal: [0.78, 0.06], neutralHue: "paper" },
+  },
+  // blueprint blue with white linework; the light mode is a pale diazo print (Blueprint)
+  blueprint: {
+    light: { paper: [0.965, 0.018], raised: 0.94, sunk: 0.915, ink: [0.3, 0.1], muted: 0.48, faint: 0.68, signal: [0.6, 0.17], signalInk: 0.5, teal: [0.46, 0.08], neutralHue: "paper" },
+    dark: { paper: [0.33, 0.1], raised: 0.37, sunk: 0.29, ink: [0.97, 0.02], muted: 0.85, faint: 0.66, signal: [0.86, 0.15], signalInk: 0.86, teal: [0.88, 0.08], neutralHue: "paper" },
+  },
+  // airy, faintly tinted product UI (Aurora)
+  pastel: {
+    light: { paper: [0.985, 0.008], raised: 0.97, sunk: 0.955, ink: [0.22, 0.03], muted: 0.47, faint: 0.68, signal: [0.6, 0.2], signalInk: 0.5, teal: [0.45, 0.09], neutralHue: "accent" },
+    dark: { paper: [0.165, 0.025], raised: 0.205, sunk: 0.135, ink: [0.95, 0.015], muted: 0.76, faint: 0.55, signal: [0.76, 0.17], signalInk: 0.76, teal: [0.8, 0.09], neutralHue: "accent" },
+  },
+  // tinted poster stock, pure black ink, one loud colour (Bold)
+  poster: {
+    light: { paper: [0.94, 0.035], raised: 0.975, sunk: 0.9, ink: [0.14, 0.008], muted: 0.4, faint: 0.6, signal: [0.64, 0.24], signalInk: 0.47, teal: [0.42, 0.1], neutralHue: "paper" },
+    dark: { paper: [0.15, 0.012], raised: 0.19, sunk: 0.12, ink: [0.96, 0.02], muted: 0.78, faint: 0.55, signal: [0.8, 0.2], signalInk: 0.8, teal: [0.8, 0.1], neutralHue: "paper" },
   },
 };
 

@@ -41,7 +41,7 @@ test.describe("home", () => {
     await open(page);
     await goTo(page, "telemetry");
     const t = page.locator("#telemetry");
-    for (const v of ["87%", "20+", "95%+", "400k+", "+27%", "99.93%"]) await expect(t.getByText(v, { exact: true }).first()).toBeAttached();
+    for (const v of ["87%", "95%+", "99.93%", "+65%", "20+", "400k+"]) await expect(t.getByText(v, { exact: true }).first()).toBeAttached();
   });
 
   test("theme switch flips and persists", async ({ page }) => {
@@ -77,14 +77,14 @@ test.describe("home", () => {
     await page.locator("#payload").getByRole("button", { name: "Kafka", exact: true }).click();
     await expect(page.getByTestId("payload-active")).toHaveText("Kafka");
     await expect(page.locator("#payload aside").getByRole("button", { name: /Zolve/ })).toBeVisible();
-    await expect(page.locator("#payload aside").getByRole("button", { name: /Multi-Agent Workflow Platform/ })).toBeVisible();
+    await expect(page.locator("#payload aside").getByRole("button", { name: /Multi-Agent Orchestration Platform/ })).toBeVisible();
   });
 
   test("mission card opens a dossier dialog and Escape closes it", async ({ page }) => {
     await open(page);
     await goTo(page, "missions");
     await page.locator("#proj-dapi").click();
-    const dialog = page.getByRole("dialog", { name: /DAPI Tile Classifier/ });
+    const dialog = page.getByRole("dialog", { name: /DAPI Image Classifier/ });
     await expect(dialog).toBeVisible();
     await expect(dialog.getByText(/99.93% reduction in peak memory/)).toBeVisible();
     await page.keyboard.press("Escape");

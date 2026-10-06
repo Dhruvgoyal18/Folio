@@ -30,11 +30,41 @@ function useGraph(graph: SkillGraph) {
   }, [graph]);
 }
 
-const shortDomain = (label: string) => (label.length <= 12 ? label : label.split(/\s*[,&/]\s*|\s+/)[0]!);
+/**
+ * Skill labels sit right of their dot; when one would overlap a label (or an owner name) already placed,
+ * it flips left, and if that collides too it is hidden until the skill is hovered. Biggest dots place first.
+ */
+type Side = "right" | "left" | "hidden";
+function placeLabels(nodes: GNode[]): Map<string, Side> {
+  const boxes: Array<[number, number, number, number]> = [];
+  // off-canvas counts as a collision, so a label never gets clipped at the graph's edge
+  const hit = (b: [number, number, number, number]) => b[0] < 2 || b[2] > W - 2 || boxes.some((o) => b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1]);
+  const out = new Map<string, Side>();
+  for (const n of nodes) {
+    if (n.kind !== "owner") continue;
+    const w = n.label.length * 8.2;
+    boxes.push([n.x! - w / 2, n.y! - 8, n.x! + w / 2, n.y! + 32]);
+  }
+  for (const n of nodes) if (n.kind !== "owner") boxes.push([n.x! - n.r, n.y! - n.r, n.x! + n.r, n.y! + n.r]);
+  const skills = nodes.filter((n) => n.kind !== "owner").sort((a, b) => b.r - a.r);
+  for (const n of skills) {
+    const w = n.label.length * 6.4 + 2;
+    const right: [number, number, number, number] = [n.x! + n.r + 3, n.y! - 6, n.x! + n.r + 4 + w, n.y! + 6];
+    const left: [number, number, number, number] = [n.x! - n.r - 4 - w, n.y! - 6, n.x! - n.r - 3, n.y! + 6];
+    const side: Side = !hit(right) ? "right" : !hit(left) ? "left" : "hidden";
+    if (side !== "hidden") boxes.push(side === "right" ? right : left);
+    out.set(n.id, side);
+  }
+  return out;
+}
+
+const shortDomain = (label: string) => (label.length <= 18 ? label : label.split(/\s*[,&/]\s*|\s+/)[0]!);
 
 function Radar() {
   const site = useSite();
-  const data = domainEvidence(site.resume);
+  // only domains with evidence: a spoke at zero says nothing (keep at least a triangle)
+  const all = domainEvidence(site.resume);
+  const data = all.filter((d) => d.bullets > 0).length >= 3 ? all.filter((d) => d.bullets > 0) : all;
   const reduced = useReducedMotion();
   const max = Math.max(1, ...data.map((d) => d.bullets));
   const R = 92;
@@ -50,7 +80,7 @@ function Radar() {
         <span className="text-[length:var(--fs--1)] font-medium">Where the evidence sits</span>
         <span className="mono text-[length:var(--fs--2)] text-ink-muted">bullets citing each domain</span>
       </figcaption>
-      <svg viewBox="-190 -125 380 250" className="w-full" role="img" aria-label={`Radar of resume bullets by domain: ${data.map((d) => `${d.label} ${d.bullets}`).join(", ")}`}>
+      <svg viewBox="-235 -125 470 250" className="w-full" role="img" aria-label={`Radar of resume bullets by domain: ${data.map((d) => `${d.label} ${d.bullets}`).join(", ")}`}>
         {[0.33, 0.66, 1].map((k) => (
           <circle key={k} r={R * k} fill="none" stroke="var(--c-rule)" />
         ))}
@@ -150,6 +180,7 @@ export function Payload() {
   const PROJECT_TITLE = useMemo(() => new Map(site.resume.projects.map((p) => [p.id, p])), [site.resume]);
   const variant = site.genome.sections.payload === "graph" && site.graph.links.length ? "graph" : "bars";
   const { nodes, links } = useGraph(site.graph);
+  const sides = useMemo(() => placeLabels(nodes), [nodes]);
   const lenis = useLenis();
   const reduced = useReducedMotion();
   const [focus, setFocus] = useState<string | null>(null);
@@ -247,7 +278,18 @@ export function Payload() {
                       <>
                         <circle cx={n.x} cy={n.y} r={n.r + 8} fill="transparent" />
                         <circle cx={n.x} cy={n.y} r={n.r} fill={on ? "var(--c-signal)" : "var(--c-paper)"} stroke={on ? "var(--c-signal)" : "var(--c-ink)"} strokeWidth={1.25} />
-                        <text x={n.x! + n.r + 4} y={n.y! + 3.5} fontSize={10.5} paintOrder="stroke" stroke="var(--c-paper)" strokeWidth={3} fill={on ? "var(--c-ink)" : "var(--c-ink-muted)"} fontFamily="var(--ff-mono)">
+                        <text
+                          x={sides.get(n.id) === "left" ? n.x! - n.r - 4 : n.x! + n.r + 4}
+                          y={n.y! + 3.5}
+                          textAnchor={sides.get(n.id) === "left" ? "end" : "start"}
+                          opacity={sides.get(n.id) === "hidden" && active !== n.id ? 0 : 1}
+                          fontSize={10.5}
+                          paintOrder="stroke"
+                          stroke="var(--c-paper)"
+                          strokeWidth={3}
+                          fill={on ? "var(--c-ink)" : "var(--c-ink-muted)"}
+                          fontFamily="var(--ff-mono)"
+                        >
                           {n.label}
                         </text>
                       </>

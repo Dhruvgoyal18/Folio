@@ -1,5 +1,7 @@
 "use client";
 
+import { CONCEPT_DEFS } from "@/genome/concepts";
+
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useChat, type Msg } from "./useChat";
@@ -121,7 +123,6 @@ function Bubble({ m, onCite, reduced }: { m: Msg; onCite: (id: string) => void; 
   );
 }
 
-const GREETING = { mission: "Ground control here.", editorial: "Welcome.", terminal: "Connected." } as const;
 
 export default function Capcom() {
   const site = useSite();
@@ -275,7 +276,7 @@ export default function Capcom() {
             >
               {!messages.length ? (
                 <div>
-                  <p className="display text-[length:var(--fs-2)] font-semibold leading-[var(--lh-snug)]">{GREETING[site.genome.concept]} What would you like to know about {site.first}?</p>
+                  <p className="display text-[length:var(--fs-2)] font-semibold leading-[var(--lh-snug)]">{CONCEPT_DEFS[site.genome.concept].greeting} What would you like to know about {site.first}?</p>
                   <p className="mt-2 text-[length:var(--fs--1)] text-ink-muted">
                     I answer from the resume only, cite the section I used, and say so when something isn’t in it.
                   </p>

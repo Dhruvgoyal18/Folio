@@ -15,7 +15,7 @@ test.describe("published sites", () => {
   });
 
   test("chapter links stay on one line at laptop width in every concept", async ({ page }) => {
-    for (const concept of ["mission", "editorial", "terminal"]) {
+    for (const concept of ["mission", "editorial", "terminal", "minimal", "noir", "brutalist", "aurora", "scholar", "blueprint"]) {
       await open(page, `/site?demo=${concept}&seed=23`, { motion: "reduced" });
       const heights = await page.locator('nav[aria-label="Chapters"] ol a').evaluateAll((as) => as.map((a) => a.getBoundingClientRect().height));
       expect(heights.length).toBeGreaterThan(3);

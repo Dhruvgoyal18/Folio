@@ -216,6 +216,77 @@ html[data-concept="terminal"] .eyebrow::before { content: "// "; }
 .caret::after { content: "▍"; margin-left: 0.08em; color: var(--c-signal); animation: caret-blink 1s steps(1) infinite; }
 @keyframes caret-blink { 50% { opacity: 0; } }
 
+
+/* ---------- Template signatures: each concept changes more than colours ---------- */
+
+/* Minimal: flat, hairline, quiet labels */
+html[data-concept="minimal"] .shadow-paper,
+html[data-concept="minimal"] .shadow-lifted { box-shadow: none; }
+html[data-concept="minimal"] .eyebrow { font-family: var(--ff-text); letter-spacing: 0.02em; text-transform: none; font-weight: 500; color: var(--c-ink-muted); }
+html[data-concept="minimal"] h2.display { letter-spacing: -0.035em; }
+
+/* Noir: velvet surfaces, light serif, spaced small caps, metallic hairlines */
+html[data-concept="noir"] .shadow-paper,
+html[data-concept="noir"] .shadow-lifted { box-shadow: none; }
+html[data-concept="noir"] .eyebrow { letter-spacing: 0.32em; color: var(--c-signal-ink); font-size: var(--fs--2); }
+html[data-concept="noir"] h2.display { font-style: italic; font-weight: 300; }
+html[data-concept="noir"] .border-rule { border-color: color-mix(in oklab, var(--c-signal) 26%, transparent); }
+html[data-concept="noir"] .noir-frame { border-color: color-mix(in oklab, var(--c-signal) 35%, transparent); }
+
+/* Bold: thick ink rules, hard offset shadows, shouting headings */
+html[data-concept="brutalist"] .border-rule { border-color: var(--c-ink); }
+html[data-concept="brutalist"] .rounded-lg.border,
+html[data-concept="brutalist"] .poster-card { border-width: 2px; }
+html[data-concept="brutalist"] .shadow-paper { box-shadow: 5px 5px 0 var(--c-ink); }
+html[data-concept="brutalist"] .shadow-lifted { box-shadow: 8px 8px 0 var(--c-ink); }
+html[data-concept="brutalist"] h2.display { text-transform: uppercase; letter-spacing: -0.04em; }
+html[data-concept="brutalist"] .eyebrow { background: var(--c-ink); color: var(--c-paper); padding: 0.2em 0.55em; font-weight: 700; }
+.poster-name { font-size: clamp(3.4rem, 1rem + 11vw, 12.5rem); text-transform: uppercase; overflow-wrap: anywhere; }
+
+/* Aurora: gradient light behind glass cards */
+html[data-concept="aurora"] body {
+  background-image:
+    radial-gradient(60vmax 40vmax at 0% 0%, color-mix(in oklab, var(--c-signal) 9%, transparent), transparent 70%),
+    radial-gradient(50vmax 40vmax at 100% 30%, color-mix(in oklab, var(--c-teal) 8%, transparent), transparent 70%);
+  background-attachment: fixed;
+}
+html[data-concept="aurora"] .rounded-lg.border,
+.glass { background-color: color-mix(in oklab, var(--c-paper-raised) 72%, transparent); backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); }
+html[data-concept="aurora"] .shadow-paper { box-shadow: 0 1px 2px color-mix(in oklab, var(--c-ink) 6%, transparent), 0 12px 32px -12px color-mix(in oklab, var(--c-signal) 30%, transparent); }
+html[data-concept="aurora"] .eyebrow { letter-spacing: 0.08em; color: var(--c-signal-ink); font-weight: 600; }
+.aurora-text {
+  background: linear-gradient(100deg, var(--c-ink) 10%, var(--c-signal-ink) 55%, var(--c-teal) 95%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.aurora-blob { filter: blur(40px); will-change: transform; }
+.aurora-fade { background: linear-gradient(to bottom, transparent 55%, var(--c-paper)); }
+@keyframes aurora-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(6%, 4%) scale(1.08); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html[data-motion="full"] .aurora-blob { animation: aurora-drift calc(var(--dur-cinematic) * 18) var(--ease-inOut) infinite; animation-delay: calc(var(--i) * -4s); }
+}
+
+/* Scholar: book typography, numbered sections, footnote-style sources */
+html[data-concept="scholar"] .shadow-paper,
+html[data-concept="scholar"] .shadow-lifted { box-shadow: none; }
+html[data-concept="scholar"] body { font-size: calc(var(--fs-0) * 1.06); }
+html[data-concept="scholar"] .eyebrow { font-family: var(--ff-text); text-transform: none; font-variant: small-caps; letter-spacing: 0.06em; font-size: var(--fs-0); }
+html[data-concept="scholar"] h2.display { font-weight: 500; }
+html[data-concept="scholar"] .mono { font-family: var(--ff-text); letter-spacing: 0; }
+html[data-concept="scholar"] .rounded-lg.border { border-left-width: 0; border-right-width: 0; border-radius: 0; }
+
+/* Blueprint: drafting linework, dashed detail boxes, dimension marks */
+html[data-concept="blueprint"] .shadow-paper,
+html[data-concept="blueprint"] .shadow-lifted { box-shadow: none; }
+html[data-concept="blueprint"] .rounded-lg.border { border-style: dashed; border-color: color-mix(in oklab, var(--c-ink) 45%, transparent); }
+html[data-concept="blueprint"] .rounded-lg.border:hover { border-style: solid; }
+html[data-concept="blueprint"] .eyebrow::before { content: "⌖ "; color: var(--c-signal-ink); }
+html[data-concept="blueprint"] h2.display { text-transform: uppercase; letter-spacing: 0.01em; }
+
+.monogram-text { paint-order: stroke; }
+
 @keyframes contour-draw { to { stroke-dashoffset: 0; } }
 
 /* landing: fanned example sites settle in once */

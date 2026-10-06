@@ -28,7 +28,8 @@ export function tokenize(s: string, extraStop?: Set<string>): string[] {
     .split(/[\s/]+/)
     .map((w) => w.replace(/^[.-]+|[.-]+$/g, ""))
     .flatMap((w) => (w.includes("-") ? [w, ...w.split("-")] : [w]))
-    .filter((w) => w && !STOP.has(w) && !extraStop?.has(w))
+    // single letters are noise ("what's" → "s", "NUS's" → "s"), except the languages C and R
+    .filter((w) => w && (w.length > 1 || w === "c" || w === "r") && !STOP.has(w) && !extraStop?.has(w))
     .map((w) => SYN[w] ?? w);
 }
 

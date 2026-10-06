@@ -47,7 +47,7 @@ export function StaticConstellation({
       if (!n.key) return;
       const text = shortLabel(n.name).toUpperCase();
       const x = starts[i]!.x + 0.09, y = starts[i]!.y - 0.06;
-      const box: [number, number, number, number] = [x - 0.02, y - 0.15, x + text.length * 0.15 * 0.62 + 0.02, y + 0.04];
+      const box: [number, number, number, number] = [x - 0.06, y - 0.2, x + text.length * 0.15 * 0.64 + 0.06, y + 0.08];
       if (placed.some(({ box: b }) => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1])) return;
       placed.push({ i, text, box });
     });

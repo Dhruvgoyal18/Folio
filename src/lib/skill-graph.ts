@@ -34,7 +34,7 @@ export function computeSkillGraph(r: Resume): SkillGraph {
   const sim = forceSimulation(nodes)
     .force("link", forceLink<SimNode, (typeof links)[number]>(links).id((d) => d.id).distance(58).strength(0.7))
     .force("charge", forceManyBody().strength(-70))
-    .force("collide", forceCollide<SimNode>().radius((d) => (d.kind === "owner" ? 34 : 20)).iterations(2))
+    .force("collide", forceCollide<SimNode>().radius((d) => (d.kind === "owner" ? 38 : Math.max(20, 10 + d.label.length * 2))).iterations(3))
     .force("x", forceX(W / 2).strength(0.015))
     .force("y", forceY(H / 2).strength(0.02))
     .stop();
