@@ -1,4 +1,5 @@
 import type { Draft } from "@/extract/draft";
+import type { Custom } from "@/lib/customize";
 import type { Genome } from "@/genome/schema";
 
 async function call<T>(url: string, init: RequestInit = {}): Promise<T> {
@@ -20,11 +21,11 @@ export const extract = (text: string, links: string[]) => call<ExtractResult>("/
 export const checkSlug = (name: string) => call<{ slug: string; available: boolean; suggestion: string }>(`/api/slug?name=${encodeURIComponent(name)}`);
 
 export type Published = { slug: string; url: string; editToken: string; editUrl: string; notes: string[] };
-export const publish = (draft: Draft, genome: Genome, slug: string) => call<Published>("/api/sites", { method: "POST", body: JSON.stringify({ draft, genome, slug }) });
+export const publish = (draft: Draft, genome: Genome, slug: string, custom?: Custom) => call<Published>("/api/sites", { method: "POST", body: JSON.stringify({ draft, genome, slug, custom }) });
 
 const auth = (token: string) => ({ authorization: `Bearer ${token}` });
 export const loadForEdit = (slug: string, token: string) =>
-  call<{ slug: string; draft: Draft; genome: Genome; updatedAt: string }>(`/api/sites/${encodeURIComponent(slug)}/edit`, { headers: auth(token) });
-export const saveEdit = (slug: string, token: string, draft: Draft, genome: Genome) =>
-  call<{ slug: string; url: string; updatedAt: string; notes: string[] }>(`/api/sites/${encodeURIComponent(slug)}`, { method: "PUT", headers: auth(token), body: JSON.stringify({ draft, genome }) });
+  call<{ slug: string; draft: Draft; genome: Genome; custom?: Custom; updatedAt: string }>(`/api/sites/${encodeURIComponent(slug)}/edit`, { headers: auth(token) });
+export const saveEdit = (slug: string, token: string, draft: Draft, genome: Genome, custom?: Custom) =>
+  call<{ slug: string; url: string; updatedAt: string; notes: string[] }>(`/api/sites/${encodeURIComponent(slug)}`, { method: "PUT", headers: auth(token), body: JSON.stringify({ draft, genome, custom }) });
 export const deleteSite = (slug: string, token: string) => call<{ deleted: string }>(`/api/sites/${encodeURIComponent(slug)}`, { method: "DELETE", headers: auth(token) });

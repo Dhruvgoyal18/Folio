@@ -102,6 +102,21 @@ The full guide is in **[docs/DEPLOY.md](docs/DEPLOY.md)**. In short:
 
 Static pages are served from the CDN. `functions/` handles `/api/*` and `/u/<slug>`, where a published site is the static `/site` shell with the person's data, genome CSS, OG tags and a `<noscript>` version added at the edge. To try the real Cloudflare runtime locally, run `npx wrangler pages dev out`. CI (`.github/workflows/ci.yml`) builds, type-checks and runs the unit and browser tests on every push.
 
+## Editing a site
+
+**Review (content):** edit every field, and add, duplicate, reorder or remove any role, school, project or competition. Undo and Redo also work with ⌘/Ctrl+Z outside text fields. While you type, each pause counts as one undo step; structural changes always get their own step.
+
+**Design › Content (presentation):** these changes sit on top of the résumé and update the live preview immediately:
+
+- **Chapters:** show, hide or reorder them. Contact always closes the page.
+- **Impact numbers:** choose up to six from every number in your bullets, put them in order, and rename or annotate them. The value always comes from the bullet. **Automatic** goes back to the computed picks.
+- **Case files:** rename, rewrite, hide or reorder them.
+- **Wording:** every chapter label, title and intro, the assistant's name and the hero button. Remixes keep your wording.
+
+**After publishing:** the private edit link (`/create?edit=<slug>#token=…`) opens the editor with your content, design and these choices restored. The browser that published the site, or that opened its edit link, also shows an owner-only **Edit site** button on the live page. Visitors never see it.
+
+The choices are stored with the site as `custom` and validated on the server (`src/lib/custom-schema.ts`). They're applied to the stored résumé (`src/lib/customize.ts`), so the page and the assistant agree. References to bullets that no longer exist are ignored, and the automatic picks take over.
+
 ## How a résumé becomes a site
 
 1. **Upload, in the browser.** PDF.js rebuilds reading-order lines, marks wide gaps with a tab, and collects link annotations (LinkedIn and GitHub are often only links). mammoth handles DOCX. Only the text is sent.

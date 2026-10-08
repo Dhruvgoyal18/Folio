@@ -7,6 +7,7 @@ import type { SiteData } from "./model";
 import { genomeAttrs, genomeCss } from "@/genome/apply";
 import { prefs, setThemeScope, siteThemeKey } from "@/lib/prefs";
 import { emit } from "@/lib/events";
+import { editTokenFor } from "@/lib/owner";
 import { Reticle } from "@/components/ui/icons";
 import { Boot } from "@/components/sections/Boot";
 import { Nav } from "@/components/sections/Nav";
@@ -145,7 +146,28 @@ export function SiteRenderer({ site, preview = false, progressive = false }: { s
         {rest ? <Chapters /> : null}
       </main>
       {rest && !preview ? <Islands /> : null}
+      {!preview ? <OwnerEdit slug={site.slug} /> : null}
     </SiteProvider>
+  );
+}
+
+/**
+ * "Edit site" for the owner only: shown when this browser published the site or opened its edit link
+ * (the token is remembered locally). Visitors never see it; the showcase and demos have no token.
+ */
+function OwnerEdit({ slug }: { slug: string }) {
+  const [token, setToken] = useState<string | null>(null);
+  useEffect(() => setToken(editTokenFor(slug)), [slug]);
+  if (!token) return null;
+  return (
+    <a
+      href={`/create?edit=${encodeURIComponent(slug)}#token=${encodeURIComponent(token)}`}
+      className="fixed bottom-5 left-5 inline-flex min-h-10 items-center gap-2 rounded-pill border border-rule bg-paper-raised px-4 text-[length:var(--fs--1)] font-medium text-ink no-underline shadow-paper hover:border-ink"
+      style={{ zIndex: "var(--z-nav)" }}
+      data-testid="owner-edit"
+    >
+      <span aria-hidden="true" className="inline-block h-2 w-2 rounded-full bg-signal" /> Edit site
+    </a>
   );
 }
 

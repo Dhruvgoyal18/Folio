@@ -9,6 +9,8 @@ import { CONCEPT_DEFS } from "@/genome/concepts";
 import { computeSkillGraph } from "@/lib/skill-graph";
 import type { SiteData } from "@/site/model";
 import { loadForEdit } from "./client";
+import { applyCustom, EMPTY_CUSTOM, type Custom } from "@/lib/customize";
+import { rememberEditToken } from "@/lib/owner";
 import { STEPS, tidy, tryNormalize, type Step } from "./model";
 import { UploadStep } from "./UploadStep";
 import { ReviewStep } from "./ReviewStep";
@@ -28,6 +30,7 @@ export function CreateApp() {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [meta, setMeta] = useState<{ unplaced: string[]; mode?: "llm" | "rules"; source?: string }>({ unplaced: [] });
   const [genome, setGenome] = useState<Genome | null>(null);
+  const [custom, setCustom] = useState<Custom>(EMPTY_CUSTOM);
   const [past, setPast] = useState<Genome[]>([]);
   const [locks, setLocks] = useState<LockKey[]>([]);
   const [edit, setEdit] = useState<{ slug: string; token: string } | null>(null);
@@ -47,6 +50,40 @@ export function CreateApp() {
   }, []);
   const [templateLabel, setTemplateLabel] = useState<string | null>(null);
 
+  // Undo / redo for content edits. Typing is coalesced (one step per pause); adding, removing and
+  // moving entries are always their own step, so "Undo" reverses exactly what the owner expects.
+  const hist = useRef<{ past: Draft[]; future: Draft[]; at: number }>({ past: [], future: [], at: 0 });
+  const [, bumpHist] = useState(0);
+  const editDraft = (next: Draft, structural = false) => {
+    const h = hist.current;
+    const now = Date.now();
+    if (draft && (structural || now - h.at > 800)) h.past = [...h.past.slice(-49), draft];
+    h.future = [];
+    h.at = structural ? 0 : now;
+    setDraft(next);
+    bumpHist((v) => v + 1);
+  };
+  const undoDraft = () => {
+    const h = hist.current;
+    const prev = h.past[h.past.length - 1];
+    if (!prev || !draft) return;
+    h.past = h.past.slice(0, -1);
+    h.future = [...h.future, draft];
+    h.at = 0;
+    setDraft(prev);
+    bumpHist((v) => v + 1);
+  };
+  const redoDraft = () => {
+    const h = hist.current;
+    const next = h.future[h.future.length - 1];
+    if (!next || !draft) return;
+    h.future = h.future.slice(0, -1);
+    h.past = [...h.past, draft];
+    h.at = 0;
+    setDraft(next);
+    bumpHist((v) => v + 1);
+  };
+
   // Work in progress survives a reload (this tab only). Restored once, saved on every change.
   const SAVE_KEY = "folio.studio";
   useEffect(() => {
@@ -54,7 +91,7 @@ export function CreateApp() {
     try {
       const raw = sessionStorage.getItem(SAVE_KEY);
       if (raw) {
-        const s = JSON.parse(raw) as { step: Step; draft: Draft | null; meta: typeof meta; genome: Genome | null; locks: LockKey[] };
+        const s = JSON.parse(raw) as { step: Step; draft: Draft | null; meta: typeof meta; genome: Genome | null; locks: LockKey[]; custom?: Custom };
         if (s.draft) {
           const fromTemplate = new URLSearchParams(location.search).has("template");
           setDraft(s.draft);
@@ -63,6 +100,7 @@ export function CreateApp() {
           setGenome(fromTemplate ? null : s.genome);
           if (fromTemplate && (s.step === "design" || s.step === "publish")) s.step = "review";
           setLocks(s.locks ?? []);
+          setCustom(s.custom ?? EMPTY_CUSTOM);
           setStep(s.step === "upload" ? "review" : s.step);
         }
       }
@@ -72,9 +110,9 @@ export function CreateApp() {
   useEffect(() => {
     if (booting || edit) return;
     try {
-      if (draft) sessionStorage.setItem(SAVE_KEY, JSON.stringify({ step, draft, meta, genome, locks }));
+      if (draft) sessionStorage.setItem(SAVE_KEY, JSON.stringify({ step, draft, meta, genome, locks, custom }));
     } catch {}
-  }, [booting, edit, step, draft, meta, genome, locks]);
+  }, [booting, edit, step, draft, meta, genome, locks, custom]);
 
   // edit mode: /create?edit=<slug>#token=<token>
   useEffect(() => {
@@ -88,8 +126,10 @@ export function CreateApp() {
     loadForEdit(slug, token)
       .then((r) => {
         setEdit({ slug, token });
+        rememberEditToken(slug, token);
         setDraft(r.draft);
         setGenome(r.genome);
+        setCustom(r.custom ?? EMPTY_CUSTOM);
         setStep("design");
       })
       .catch((e: Error) => setLoadError(e.message))
@@ -125,11 +165,22 @@ export function CreateApp() {
     if (!resume || resumeKey === lastKey.current) return;
     const first = lastKey.current === "";
     lastKey.current = resumeKey;
-    if (!first && genome) setGenome(generateGenome(resume, { seed: genome.seed, previous: genome, locks: LOCKABLE.filter((k) => k !== "copy"), concept: genome.concept }));
+    // owner-written wording is never regenerated
+    if (!first && genome && !custom.keepWording) setGenome(generateGenome(resume, { seed: genome.seed, previous: genome, locks: LOCKABLE.filter((k) => k !== "copy"), concept: genome.concept }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resumeKey]);
 
-  const site: SiteData | null = resume && genome && graph ? { slug: edit?.slug ?? "preview", resume, genome, graph } : null;
+  // owner choices (featured numbers, case files) applied on top — exactly what the server will store
+  const shown = useMemo(() => (resume ? applyCustom(resume, custom) : null), [resume, custom]);
+  const shownGraph = useMemo(() => (shown && shown !== resume ? computeSkillGraph(shown) : graph), [shown, resume, graph]);
+  const site: SiteData | null = shown && genome && shownGraph ? { slug: edit?.slug ?? "preview", resume: shown, genome, graph: shownGraph, custom } : null;
+  const editCopy = (copy: Genome["copy"]) => {
+    if (!genome) return;
+    setPast((p) => [...p.slice(-19), genome]);
+    setGenome({ ...genome, copy });
+    if (!custom.keepWording) setCustom((c) => ({ ...c, keepWording: true }));
+    if (!locks.includes("copy")) setLocks((l) => [...l, "copy"]);
+  };
 
   const toDesign = () => {
     if (!resume) return;
@@ -144,6 +195,9 @@ export function CreateApp() {
     else if (o.energy !== undefined) next = generateGenome(resume, { seed: genome.seed, previous: genome, locks: LOCKABLE.filter((k) => k !== "motion"), concept: genome.concept, energy: o.energy, theme: genome.defaultTheme });
     else if (o.concept) next = generateGenome(resume, { seed: genome.seed, concept: o.concept, previous: genome, locks: locks.filter((k) => k !== "concept") });
     else next = generateGenome(resume, { seed: randomSeed(), previous: genome, locks });
+    // the owner's own wording survives every remix, even into another template (only the chapter
+    // numbering style follows the new template)
+    if (custom.keepWording) next = { ...next, copy: { ...genome.copy, codeStyle: next.copy.codeStyle } };
     setPast((p) => [...p.slice(-19), genome]);
     setGenome(next);
   };
@@ -164,6 +218,8 @@ export function CreateApp() {
     setGenome(null);
     setPast([]);
     setLocks([]);
+    setCustom(EMPTY_CUSTOM);
+    hist.current = { past: [], future: [], at: 0 };
     setMeta({ unplaced: [] });
     setStep("upload");
   };
@@ -249,21 +305,23 @@ export function CreateApp() {
             }}
           />
         ) : null}
-        {!booting && step === "review" && draft && check ? <ReviewStep draft={draft} onChange={setDraft} unplaced={meta.unplaced} onUnplaced={(u) => setMeta((m) => ({ ...m, unplaced: u }))} check={check} mode={meta.mode} source={meta.source} onNext={toDesign} /> : null}
+        {!booting && step === "review" && draft && check ? <ReviewStep draft={draft} onChange={editDraft} history={{ undo: undoDraft, redo: redoDraft, canUndo: hist.current.past.length > 0, canRedo: hist.current.future.length > 0 }} unplaced={meta.unplaced} onUnplaced={(u) => setMeta((m) => ({ ...m, unplaced: u }))} check={check} mode={meta.mode} source={meta.source} onNext={toDesign} /> : null}
         {!booting && step === "design" && site ? (
-          <DesignStep site={site} locks={locks} onLocks={setLocks} onRemix={remix} onBack={() => setStep("review")} onNext={() => setStep("publish")} history={{ canUndo: past.length > 0, undo }} />
+          <DesignStep site={site} rawResume={resume!} custom={custom} onCustom={setCustom} onCopy={editCopy} locks={locks} onLocks={setLocks} onRemix={remix} onBack={() => setStep("review")} onNext={() => setStep("publish")} history={{ canUndo: past.length > 0, undo }} />
         ) : null}
         {!booting && step === "design" && !site ? <p aria-busy="true" className="text-ink-muted">Preparing your design…</p> : null}
         {!booting && step === "publish" && tidied && genome ? (
           <PublishStep
             draft={tidied}
             genome={genome}
+            custom={custom}
             edit={edit ?? undefined}
             onBack={() => setStep("design")}
             onPublished={(p) => {
               // from now on this tab edits the published site (saving updates it instead of publishing a copy)
               if (p.token) {
                 setEdit({ slug: p.slug, token: p.token });
+                rememberEditToken(p.slug, p.token);
                 try {
                   sessionStorage.removeItem(SAVE_KEY);
                 } catch {}

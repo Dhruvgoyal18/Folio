@@ -13,6 +13,8 @@ import { SHOWCASE_SLUG } from "@/site/showcase";
 import { injectSite } from "./render";
 import { isValidSlug, slugify, uniqueSlug } from "./slug";
 import { publicSite, type SiteStore, type StoredSite } from "./store";
+import { CustomSchema } from "@/lib/custom-schema";
+import { applyCustom } from "@/lib/customize";
 
 /**
  * Platform API — one runtime-agnostic router used by the Cloudflare Pages Function and the
@@ -94,7 +96,7 @@ export async function loadSite(store: SiteStore, slug: string): Promise<SiteData
 
 /** Validate a publish/update payload into a ready-to-store site (minus token/timestamps). */
 function buildSite(body: unknown, slug: string): { ok: true; site: Omit<StoredSite, "editTokenHash" | "createdAt" | "updatedAt" | "version">; notes: string[] } | { ok: false; res: Response } {
-  const b = body as { draft?: unknown; genome?: unknown } | null;
+  const b = body as { draft?: unknown; genome?: unknown; custom?: unknown } | null;
   const first = DraftSchema.safeParse(b?.draft);
   // same clean-up the studio applies, so a hand-built API call gets identical treatment
   const d = first.success ? DraftSchema.safeParse(tidyDraft(first.data)) : first;
@@ -110,7 +112,12 @@ function buildSite(body: unknown, slug: string): { ok: true; site: Omit<StoredSi
   }
   const g = validateGenome(b?.genome);
   if (!g.ok) return { ok: false, res: json(422, { error: "The design is invalid.", issues: g.issues.slice(0, 8) }) };
-  return { ok: true, site: { slug, draft: d.data, resume, genome: g.genome, graph: computeSkillGraph(resume) }, notes: [...notes, ...g.repaired] };
+  // owner choices (hidden chapters, featured numbers, case files) are validated and applied here, so the
+  // stored résumé — and the assistant's knowledge — is exactly what visitors see
+  const c = CustomSchema.safeParse(b?.custom ?? undefined);
+  if (!c.success) return { ok: false, res: json(422, { error: "The customisations are invalid.", issues: c.error.issues.slice(0, 8).map((i) => `${i.path.join(".")}: ${i.message}`) }) };
+  const final = applyCustom(resume, c.data);
+  return { ok: true, site: { slug, draft: d.data, resume: final, genome: g.genome, graph: computeSkillGraph(final), custom: c.data }, notes: [...notes, ...g.repaired] };
 }
 
 export async function handleApi(req: Request, env: ApiEnv, deps: ApiDeps): Promise<Response> {
@@ -203,7 +210,7 @@ export async function handleApi(req: Request, env: ApiEnv, deps: ApiDeps): Promi
     const rl = limiter(deps, env, "write").check(ip);
     if (!rl.ok) return json(429, { error: "Too many requests." }, { "retry-after": String(rl.retryAfter) });
     if (!(await verifyToken(bearer(req), stored.editTokenHash))) return json(401, { error: "This edit link isn't valid for that site." }, { "www-authenticate": "Bearer" });
-    if (method === "GET" && m[2]) return json(200, { slug, draft: stored.draft, genome: stored.genome, updatedAt: stored.updatedAt, version: stored.version });
+    if (method === "GET" && m[2]) return json(200, { slug, draft: stored.draft, genome: stored.genome, custom: stored.custom ?? { hidden: [] }, updatedAt: stored.updatedAt, version: stored.version });
     if (m[2]) return json(405, { error: "Method not allowed" }, { allow: "GET" });
     if (method === "PUT") {
       const r = await readJson(req);

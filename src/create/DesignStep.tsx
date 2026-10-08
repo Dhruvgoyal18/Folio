@@ -8,6 +8,9 @@ import { CONCEPT_DEFS } from "@/genome/concepts";
 import { templateSwatches } from "@/genome/templates";
 import { PAIRINGS } from "@/genome/fonts";
 import type { SiteData } from "@/site/model";
+import type { Resume } from "@/data/schema";
+import type { Custom } from "@/lib/customize";
+import { CustomizePanel } from "./CustomizePanel";
 import type { PreviewMessage } from "@/site/SiteShell";
 import { cn } from "@/lib/cn";
 
@@ -24,6 +27,11 @@ const ENERGY: Record<Genome["motion"], number> = { calm: 0.15, snappy: 0.5, cine
 
 type Props = {
   site: SiteData;
+  /** the résumé before owner customisations, for the Content tab */
+  rawResume: Resume;
+  custom: Custom;
+  onCustom: (c: Custom) => void;
+  onCopy: (copy: Genome["copy"]) => void;
   locks: LockKey[];
   onLocks: (l: LockKey[]) => void;
   onRemix: (o?: { concept?: Genome["concept"]; energy?: number; theme?: "light" | "dark" }) => void;
@@ -35,7 +43,8 @@ type Props = {
 /** Static swatches for the picker (the real palette is generated per seed). */
 const SWATCH = templateSwatches();
 
-export function DesignStep({ site, locks, onLocks, onRemix, onBack, onNext, history }: Props) {
+export function DesignStep({ site, rawResume, custom, onCustom, onCopy, locks, onLocks, onRemix, onBack, onNext, history }: Props) {
+  const [panel, setPanel] = useState<"look" | "content">("look");
   const g = site.genome;
   const frame = useRef<HTMLIFrameElement>(null);
   const [ready, setReady] = useState(false);
@@ -78,7 +87,7 @@ export function DesignStep({ site, locks, onLocks, onRemix, onBack, onNext, hist
   const [tab, setTab] = useState<"controls" | "preview">("controls");
 
   return (
-    <div className="flex flex-col gap-4 lg:grid lg:h-[calc(100dvh-8.5rem)] lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-6">
+    <div className="flex flex-col gap-4 lg:grid lg:h-[calc(100dvh-8.5rem)] lg:grid-cols-[340px_minmax(0,1fr)] lg:gap-6">
       {/* phones: switch between controls and preview */}
       <div className="flex gap-1 self-start rounded-pill border border-rule bg-paper-raised p-0.5 lg:hidden" role="tablist" aria-label="Design view">
         {(["controls", "preview"] as const).map((t) => (
@@ -92,8 +101,19 @@ export function DesignStep({ site, locks, onLocks, onRemix, onBack, onNext, hist
         <header>
           <p className="kicker">Step 3 of 4</p>
           <h1 className="display mt-2 text-[length:var(--fs-3)] leading-tight">Design your site</h1>
-          <p className="mt-1.5 text-[length:var(--fs--1)] text-ink-muted">Remix until it feels like you. Locked parts stay put.</p>
+          <p className="mt-1.5 text-[length:var(--fs--1)] text-ink-muted">{panel === "look" ? "Remix until it feels like you. Locked parts stay put." : "Choose what your site shows and how it says it."}</p>
         </header>
+
+        <div className="flex gap-0.5 rounded-pill border border-rule bg-paper-raised p-0.5" role="tablist" aria-label="Design controls">
+          {(["look", "content"] as const).map((t) => (
+            <button key={t} type="button" role="tab" aria-selected={panel === t} onClick={() => setPanel(t)} className={cn("h-8 flex-1 rounded-pill text-[length:var(--fs--1)] capitalize", panel === t ? "bg-ink text-paper" : "text-ink-muted hover:text-ink")} data-testid={`panel-${t}`}>
+              {t === "look" ? "Look" : "Content"}
+            </button>
+          ))}
+        </div>
+
+        {panel === "content" ? <CustomizePanel resume={rawResume} custom={custom} onCustom={onCustom} genome={g} onCopy={onCopy} /> : null}
+        <div className={cn("flex flex-col gap-5", panel !== "look" && "hidden")}>
 
         <fieldset className="flex flex-col gap-2">
           <legend className="label mb-2 flex w-full items-center justify-between">
@@ -194,6 +214,8 @@ export function DesignStep({ site, locks, onLocks, onRemix, onBack, onNext, hist
           <dt className="text-ink-muted">Seed</dt>
           <dd className="mono">{g.seed}</dd>
         </dl>
+
+        </div>
 
         <div className="mt-auto flex gap-2 border-t border-rule pt-4">
           <button type="button" onClick={onBack} className="btn btn-outline">

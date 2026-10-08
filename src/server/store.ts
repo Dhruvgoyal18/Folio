@@ -53,5 +53,5 @@ export class MemoryStore implements SiteStore {
 
 /** Public view of a stored site. */
 export function publicSite(s: StoredSite): SiteData {
-  return { slug: s.slug, resume: s.resume, genome: s.genome, graph: s.graph, updatedAt: s.updatedAt };
+  return { slug: s.slug, resume: s.resume, genome: s.genome, graph: s.graph, ...(s.custom ? { custom: s.custom } : {}), updatedAt: s.updatedAt };
 }

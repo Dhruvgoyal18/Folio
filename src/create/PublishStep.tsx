@@ -3,11 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { checkSlug, deleteSite, publish, saveEdit, type Published } from "./client";
 import type { Draft } from "@/extract/draft";
+import type { Custom } from "@/lib/customize";
+import { forgetEditToken } from "@/lib/owner";
 import type { Genome } from "@/genome/schema";
 import { inputCls } from "./fields";
 
 type Props = {
   draft: Draft;
+  custom?: Custom;
   genome: Genome;
   /** set when editing an existing site */
   edit?: { slug: string; token: string };
@@ -35,7 +38,9 @@ function Copy({ value, label }: { value: string; label: string }) {
   );
 }
 
-export function PublishStep({ draft, genome, edit, onBack, onPublished }: Props) {
+export function PublishStep({ draft, genome: rawGenome, custom, edit, onBack, onPublished }: Props) {
+  // wording typed by the owner can't leave required fields empty
+  const genome = { ...rawGenome, copy: { ...rawGenome.copy, assistant: rawGenome.copy.assistant.trim() || "Assistant", heroCta: rawGenome.copy.heroCta.trim() || `Ask ${rawGenome.copy.assistant.trim() || "the assistant"}` } };
   const [slug, setSlug] = useState(edit?.slug ?? "");
   const touched = useRef(false); // once the owner types, a late suggestion must not overwrite it
   const [avail, setAvail] = useState<{ ok: boolean; msg: string } | null>(null);
@@ -70,11 +75,11 @@ export function PublishStep({ draft, genome, edit, onBack, onPublished }: Props)
     setError(null);
     try {
       if (edit) {
-        const r = await saveEdit(edit.slug, edit.token, draft, genome);
+        const r = await saveEdit(edit.slug, edit.token, draft, genome, custom);
         setDone({ slug: r.slug, url: r.url, origin: location.origin, saved: true });
         onPublished({ slug: r.slug });
       } else {
-        const r = await publish(draft, genome, slug);
+        const r = await publish(draft, genome, slug, custom);
         setDone({ ...r, origin: location.origin });
         onPublished({ slug: r.slug, editUrl: r.editUrl, token: r.editToken });
       }
@@ -184,6 +189,7 @@ export function PublishStep({ draft, genome, edit, onBack, onPublished }: Props)
                 onClick={async () => {
                   try {
                     await deleteSite(edit.slug, edit.token);
+                    forgetEditToken(edit.slug);
                     location.href = "/";
                   } catch (e) {
                     setError((e as Error).message);

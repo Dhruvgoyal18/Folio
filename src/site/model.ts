@@ -2,6 +2,7 @@ import type { Resume } from "@/data/schema";
 import type { Genome, SectionId } from "@/genome/schema";
 import { chapterOrder } from "@/genome/generate";
 import { CONCEPT_DEFS } from "@/genome/concepts";
+import { customOrder, type Custom } from "@/lib/customize";
 import type { SkillGraph } from "@/lib/skill-graph-types";
 import { citeTargets, currentRole, firstName, kpis, projectsWithHighlights, skillUsage } from "@/lib/resume";
 
@@ -11,6 +12,8 @@ export type SiteData = {
   resume: Resume;
   genome: Genome;
   graph: SkillGraph;
+  /** owner choices: hidden chapters and chapter order (numbers and case files are already applied to `resume`) */
+  custom?: Custom;
   updatedAt?: string;
 };
 
@@ -36,7 +39,7 @@ export function buildModel(site: SiteData) {
     training: r.education.length + r.competitions.length + r.awards.length > 0,
     comms: true,
   };
-  const order = chapterOrder(g).filter((id) => hasContent[id]);
+  const order = customOrder(chapterOrder(g), site.custom).filter((id) => hasContent[id]);
   const chapters: Chapter[] = [
     { id: "launch", code: chapterCode(g.copy.codeStyle, 1), label: CONCEPT_DEFS[g.concept].launchLabel },
     ...order.map((id, i) => ({ id, code: chapterCode(g.copy.codeStyle, i + 2), label: g.copy.sections[id].eyebrow.split(/[&,]/)[0]!.trim() })),

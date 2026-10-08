@@ -9,7 +9,9 @@ import { cn } from "@/lib/cn";
 
 type Props = {
   draft: Draft;
-  onChange: (d: Draft) => void;
+  /** `structural` marks add / remove / move / duplicate, which always get their own undo step */
+  onChange: (d: Draft, structural?: boolean) => void;
+  history?: { undo: () => void; redo: () => void; canUndo: boolean; canRedo: boolean };
   unplaced: string[];
   onUnplaced: (u: string[]) => void;
   check: Normalized;
@@ -18,9 +20,26 @@ type Props = {
   onNext: () => void;
 };
 
+/**
+ * Stable React keys for draft entries (drafts carry no ids). An edited entry inherits its key, so an
+ * open entry stays open while you type and follows itself when moved; a duplicate gets a new key.
+ */
+const KEYS = new WeakMap<object, string>();
+let nextKey = 0;
+const keyOf = (o: object) => {
+  let k = KEYS.get(o);
+  if (!k) KEYS.set(o, (k = `e${nextKey++}`));
+  return k;
+};
+
 /** Generic list helpers that keep the editor code flat. */
 function upd<T>(arr: T[], i: number, patch: Partial<T>): T[] {
-  return arr.map((x, j) => (j === i ? { ...x, ...patch } : x));
+  return arr.map((x, j) => {
+    if (j !== i) return x;
+    const n = { ...x, ...patch };
+    KEYS.set(n as object, keyOf(x as object));
+    return n;
+  });
 }
 const del = <T,>(arr: T[], i: number) => arr.filter((_, j) => j !== i);
 const move = <T,>(arr: T[], i: number, by: number) => {
@@ -30,6 +49,7 @@ const move = <T,>(arr: T[], i: number, by: number) => {
   [out[i], out[j]] = [out[j]!, out[i]!];
   return out;
 };
+const dup = <T,>(arr: T[], i: number) => [...arr.slice(0, i + 1), structuredClone(arr[i]!), ...arr.slice(i + 1)];
 const count = (xs: string[]) => xs.filter((x) => x.trim()).length;
 const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 const span = (a?: string, b?: string) => [a, b].filter(Boolean).join(" – ");
@@ -43,6 +63,27 @@ const SECTIONS = [
   { id: "sec-competitions", label: "Competitions" },
   { id: "sec-awards", label: "Honours" },
 ];
+
+/** Move up / move down / duplicate / remove — the same controls on every kind of entry. */
+function EntryActions({ i, n, name, onMove, onDuplicate, onRemove, extra }: { i: number; n: number; name: string; onMove: (by: number) => void; onDuplicate: () => void; onRemove: () => void; extra?: ReactNode }) {
+  return (
+    <>
+      {extra}
+      <SmallButton onClick={() => onMove(-1)} disabled={i === 0} aria-label={`Move ${name} up`}>
+        ↑
+      </SmallButton>
+      <SmallButton onClick={() => onMove(1)} disabled={i === n - 1} aria-label={`Move ${name} down`}>
+        ↓
+      </SmallButton>
+      <SmallButton onClick={onDuplicate} aria-label={`Duplicate ${name}`} data-testid="duplicate">
+        Duplicate
+      </SmallButton>
+      <SmallButton tone="danger" className="ml-auto" onClick={onRemove} aria-label={`Remove ${name}`} data-testid="remove">
+        <Close size={13} /> Remove
+      </SmallButton>
+    </>
+  );
+}
 
 /** A collapsible entry: a one-line summary that opens into its form. */
 function Entry({ title, meta, children, defaultOpen, testId, actions }: { title: string; meta: string; children: ReactNode; defaultOpen?: boolean; testId?: string; actions: ReactNode }) {
@@ -66,22 +107,37 @@ function Entry({ title, meta, children, defaultOpen, testId, actions }: { title:
   );
 }
 
-export function ReviewStep({ draft: d, onChange, unplaced, onUnplaced, check, mode, source, onNext }: Props) {
+export function ReviewStep({ draft: d, onChange, history, unplaced, onUnplaced, check, mode, source, onNext }: Props) {
   const set = (patch: Partial<Draft>) => onChange({ ...d, ...patch });
+  const setS = (patch: Partial<Draft>) => onChange({ ...d, ...patch }, true);
+
+  // ⌘/Ctrl+Z and ⇧⌘/Ctrl+Shift+Z outside text fields (inside a field, the browser's own undo applies)
+  useEffect(() => {
+    if (!history) return;
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== "z" || t?.closest("input, textarea, select, [contenteditable]")) return;
+      e.preventDefault();
+      if (e.shiftKey) history.redo();
+      else history.undo();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [history]);
   const [active, setActive] = useState(SECTIONS[0]!.id);
   const navLock = useRef(0); // ignore scroll-spy while a clicked link is scrolling into place
 
   /** Move a line the parser couldn't place into the draft (or drop it). */
   const place = (i: number, where: "award" | "bullet" | "course" | "dismiss") => {
     const text = unplaced[i]!.replace(/^[•●▪‣◦\-*–]\s*/, "").trim();
-    if (where === "award") set({ awards: [...d.awards, { text }] });
+    if (where === "award") setS({ awards: [...d.awards, { text }] });
     if (where === "bullet") {
       const last = d.experience.length - 1;
       const e = d.experience[last]!;
       const groups = e.groups.length ? e.groups : [{ bullets: [] }];
-      set({ experience: upd(d.experience, last, { groups: upd(groups, groups.length - 1, { bullets: [...groups[groups.length - 1]!.bullets, text] }) }) });
+      setS({ experience: upd(d.experience, last, { groups: upd(groups, groups.length - 1, { bullets: [...groups[groups.length - 1]!.bullets, text] }) }) });
     }
-    if (where === "course") set({ education: upd(d.education, 0, { coursework: [...d.education[0]!.coursework, text] }) });
+    if (where === "course") setS({ education: upd(d.education, 0, { coursework: [...d.education[0]!.coursework, text] }) });
     onUnplaced(unplaced.filter((_, j) => j !== i));
   };
   const notes = check.ok ? check.notes : [];
@@ -183,6 +239,16 @@ export function ReviewStep({ draft: d, onChange, unplaced, onUnplaced, check, mo
             ) : null}
             Fix anything that's wrong — your site only says what's on this page.
           </p>
+          {history ? (
+            <div className="mt-3 flex gap-1.5" role="group" aria-label="History">
+              <button type="button" className="btn btn-sm btn-outline" onClick={history.undo} disabled={!history.canUndo} data-testid="undo">
+                Undo
+              </button>
+              <button type="button" className="btn btn-sm btn-outline" onClick={history.redo} disabled={!history.canRedo} data-testid="redo">
+                Redo
+              </button>
+            </div>
+          ) : null}
         </header>
 
         {notes.length || unplaced.length ? <div className="panel flex flex-col gap-3 p-4 lg:hidden">{extras("main")}</div> : null}
@@ -204,7 +270,7 @@ export function ReviewStep({ draft: d, onChange, unplaced, onUnplaced, check, mo
           id="sec-experience"
           count={d.experience.length}
           actions={
-            <SmallButton onClick={() => set({ experience: [...d.experience, emptyExperience()] })}>
+            <SmallButton onClick={() => setS({ experience: [...d.experience, emptyExperience()] })}>
               <Plus size={13} /> Add role
             </SmallButton>
           }
@@ -213,26 +279,25 @@ export function ReviewStep({ draft: d, onChange, unplaced, onUnplaced, check, mo
           <div className="flex flex-col gap-2">
             {d.experience.map((e, i) => (
               <Entry
-                key={i}
+                key={keyOf(e)}
                 testId="exp-entry"
                 defaultOpen={!e.org && !e.role}
                 title={`${e.role || "New role"}${e.org ? ` · ${e.org}` : ""}`}
                 meta={[span(e.start, e.end), e.type, plural(e.groups.reduce((n, g) => n + count(g.bullets), 0), "bullet")].filter(Boolean).join(" · ")}
                 actions={
-                  <>
-                    <SmallButton onClick={() => set({ experience: upd(d.experience, i, { groups: [...e.groups, { title: "", bullets: [] }] }) })}>
-                      <Plus size={13} /> Bullet group
-                    </SmallButton>
-                    <SmallButton onClick={() => set({ experience: move(d.experience, i, -1) })} disabled={i === 0} aria-label={`Move ${e.role || "role"} up`}>
-                      ↑
-                    </SmallButton>
-                    <SmallButton onClick={() => set({ experience: move(d.experience, i, 1) })} disabled={i === d.experience.length - 1} aria-label={`Move ${e.role || "role"} down`}>
-                      ↓
-                    </SmallButton>
-                    <SmallButton tone="danger" className="ml-auto" onClick={() => set({ experience: del(d.experience, i) })}>
-                      <Close size={13} /> Remove
-                    </SmallButton>
-                  </>
+                  <EntryActions
+                    i={i}
+                    n={d.experience.length}
+                    name={e.role || "role"}
+                    onMove={(by) => setS({ experience: move(d.experience, i, by) })}
+                    onDuplicate={() => setS({ experience: dup(d.experience, i) })}
+                    onRemove={() => setS({ experience: del(d.experience, i) })}
+                    extra={
+                      <SmallButton onClick={() => setS({ experience: upd(d.experience, i, { groups: [...e.groups, { title: "", bullets: [] }] }) })}>
+                        <Plus size={13} /> Bullet group
+                      </SmallButton>
+                    }
+                  />
                 }
               >
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -253,7 +318,7 @@ export function ReviewStep({ draft: d, onChange, unplaced, onUnplaced, check, mo
                       <div className="flex items-end gap-2">
                         <Text className="flex-1" label="Group heading" value={g.title} onChange={(title) => set({ experience: upd(d.experience, i, { groups: upd(e.groups, gi, { title }) }) })} />
                         {e.groups.length > 1 ? (
-                          <SmallButton tone="danger" onClick={() => set({ experience: upd(d.experience, i, { groups: del(e.groups, gi) }) })} aria-label="Remove this group">
+                          <SmallButton tone="danger" onClick={() => setS({ experience: upd(d.experience, i, { groups: del(e.groups, gi) }) })} aria-label="Remove this group">
                             <Close size={13} />
                           </SmallButton>
                         ) : null}
@@ -273,7 +338,7 @@ export function ReviewStep({ draft: d, onChange, unplaced, onUnplaced, check, mo
           id="sec-education"
           count={d.education.length}
           actions={
-            <SmallButton onClick={() => set({ education: [...d.education, emptyEducation()] })}>
+            <SmallButton onClick={() => setS({ education: [...d.education, emptyEducation()] })}>
               <Plus size={13} /> Add
             </SmallButton>
           }
@@ -281,14 +346,12 @@ export function ReviewStep({ draft: d, onChange, unplaced, onUnplaced, check, mo
           <div className="flex flex-col gap-2">
             {d.education.map((e, i) => (
               <Entry
-                key={i}
+                key={keyOf(e)}
                 defaultOpen={!e.institution}
                 title={e.institution || "New school"}
                 meta={[e.degree, span(e.start, e.end), e.coursework.length ? plural(count(e.coursework), "course") : ""].filter(Boolean).join(" · ")}
                 actions={
-                  <SmallButton tone="danger" className="ml-auto" onClick={() => set({ education: del(d.education, i) })}>
-                    <Close size={13} /> Remove
-                  </SmallButton>
+                  <EntryActions i={i} n={d.education.length} name={e.institution || "school"} onMove={(by) => setS({ education: move(d.education, i, by) })} onDuplicate={() => setS({ education: dup(d.education, i) })} onRemove={() => setS({ education: del(d.education, i) })} />
                 }
               >
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -307,16 +370,19 @@ export function ReviewStep({ draft: d, onChange, unplaced, onUnplaced, check, mo
           title="Skills"
           id="sec-skills"
           actions={
-            <SmallButton onClick={() => set({ skills: [...d.skills, { group: "", items: [] }] })}>
+            <SmallButton onClick={() => setS({ skills: [...d.skills, { group: "", items: [] }] })}>
               <Plus size={13} /> Group
             </SmallButton>
           }
         >
           {d.skills.map((g, i) => (
-            <div key={i} className="grid items-end gap-3 sm:grid-cols-[180px_minmax(0,1fr)_auto]">
+            <div key={i} className="grid items-end gap-3 sm:grid-cols-[180px_minmax(0,1fr)_auto_auto]">
               <Text label="Group" value={g.group} onChange={(group) => set({ skills: upd(d.skills, i, { group }) })} />
               <Text label="Skills, comma-separated" value={g.items.join(", ")} onChange={(v) => set({ skills: upd(d.skills, i, { items: v.split(",").map((s) => s.trimStart()) }) })} />
-              <SmallButton tone="danger" onClick={() => set({ skills: del(d.skills, i) })} aria-label={`Remove skill group ${g.group || i + 1}`}>
+              <SmallButton onClick={() => setS({ skills: move(d.skills, i, -1) })} disabled={i === 0} aria-label={`Move skill group ${g.group || i + 1} up`}>
+                ↑
+              </SmallButton>
+              <SmallButton tone="danger" onClick={() => setS({ skills: del(d.skills, i) })} aria-label={`Remove skill group ${g.group || i + 1}`}>
                 <Close size={13} />
               </SmallButton>
             </div>
@@ -328,7 +394,7 @@ export function ReviewStep({ draft: d, onChange, unplaced, onUnplaced, check, mo
           id="sec-projects"
           count={d.projects.length}
           actions={
-            <SmallButton onClick={() => set({ projects: [...d.projects, emptyProject()] })}>
+            <SmallButton onClick={() => setS({ projects: [...d.projects, emptyProject()] })}>
               <Plus size={13} /> Add
             </SmallButton>
           }
@@ -337,14 +403,12 @@ export function ReviewStep({ draft: d, onChange, unplaced, onUnplaced, check, mo
           <div className="flex flex-col gap-2">
             {d.projects.map((p, i) => (
               <Entry
-                key={i}
+                key={keyOf(p)}
                 defaultOpen={!p.title}
                 title={p.title || "New project"}
                 meta={[p.link, plural(count(p.bullets), "bullet")].filter(Boolean).join(" · ")}
                 actions={
-                  <SmallButton tone="danger" className="ml-auto" onClick={() => set({ projects: del(d.projects, i) })}>
-                    <Close size={13} /> Remove
-                  </SmallButton>
+                  <EntryActions i={i} n={d.projects.length} name={p.title || "project"} onMove={(by) => setS({ projects: move(d.projects, i, by) })} onDuplicate={() => setS({ projects: dup(d.projects, i) })} onRemove={() => setS({ projects: del(d.projects, i) })} />
                 }
               >
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -362,7 +426,7 @@ export function ReviewStep({ draft: d, onChange, unplaced, onUnplaced, check, mo
           id="sec-competitions"
           count={d.competitions.length}
           actions={
-            <SmallButton onClick={() => set({ competitions: [...d.competitions, emptyCompetition()] })}>
+            <SmallButton onClick={() => setS({ competitions: [...d.competitions, emptyCompetition()] })}>
               <Plus size={13} /> Add
             </SmallButton>
           }
@@ -371,14 +435,12 @@ export function ReviewStep({ draft: d, onChange, unplaced, onUnplaced, check, mo
           <div className="flex flex-col gap-2">
             {d.competitions.map((c, i) => (
               <Entry
-                key={i}
+                key={keyOf(c)}
                 defaultOpen={!c.name}
                 title={c.name || "New competition"}
                 meta={[c.result, span(c.start, c.end), plural(count(c.bullets), "bullet")].filter(Boolean).join(" · ")}
                 actions={
-                  <SmallButton tone="danger" className="ml-auto" onClick={() => set({ competitions: del(d.competitions, i) })}>
-                    <Close size={13} /> Remove
-                  </SmallButton>
+                  <EntryActions i={i} n={d.competitions.length} name={c.name || "competition"} onMove={(by) => setS({ competitions: move(d.competitions, i, by) })} onDuplicate={() => setS({ competitions: dup(d.competitions, i) })} onRemove={() => setS({ competitions: del(d.competitions, i) })} />
                 }
               >
                 <div className="grid gap-3 sm:grid-cols-2">
