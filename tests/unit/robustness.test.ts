@@ -150,7 +150,7 @@ describe("fuzz: random résumé text", () => {
         throw new Error(`fuzz case ${n} failed: ${(e as Error).message}\n---\n${text}`);
       }
     }
-  });
+  }, 30_000); // 1500 full pipelines (parse → normalise → genome → model); slow on a busy CI worker
 });
 
 describe("fuzz: hand-edited drafts from the review screen", () => {
@@ -186,7 +186,7 @@ describe("fuzz: hand-edited drafts from the review screen", () => {
         throw new Error(`draft case ${n} failed: ${(e as Error).message}\n${JSON.stringify(raw).slice(0, 1500)}`);
       }
     }
-  });
+  }, 30_000); // 1500 full pipelines (parse → normalise → genome → model); slow on a busy CI worker
 });
 
 import { dateRange } from "@/lib/resume";

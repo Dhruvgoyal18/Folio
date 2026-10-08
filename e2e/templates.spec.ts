@@ -83,6 +83,15 @@ test.describe("every template renders", () => {
       await goTo(page, "comms");
       await expect(page.locator("#comms")).toBeVisible();
       await noOverflow(page);
+      // reveal every chapter first (titles fade in once on first view); otherwise axe's own scrolling
+      // catches a title mid-fade and reports the blended colour as low contrast
+      await page.evaluate(async () => {
+        for (let y = 0; y < document.body.scrollHeight; y += innerHeight * 0.5) {
+          window.scrollTo(0, y);
+          await new Promise((r) => setTimeout(r, 60));
+        }
+      });
+      await page.waitForTimeout(400); // the reduced-motion fade is 150 ms
       // axe scrolls while it measures, which moves the active-chapter pill mid-check; the nav's own contrast
       // is covered by a11y.spec, so it is excluded here
       const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag22aa"]).exclude('nav[aria-label="Chapters"] ol').analyze();

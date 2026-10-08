@@ -203,7 +203,7 @@ export function CreateApp() {
                       aria-current={active ? "step" : undefined}
                       onClick={() => (s.id === "design" ? toDesign() : setStep(s.id))}
                       className={cn(
-                        "flex h-7 items-center gap-1.5 rounded-pill px-2.5 text-[length:var(--fs--1)] transition-colors sm:px-3",
+                        "step-btn flex h-7 items-center gap-1.5 rounded-pill px-2.5 text-[length:var(--fs--1)] transition-colors sm:px-3",
                         active ? "bg-ink text-paper" : can ? "text-ink hover:bg-ink/[0.06]" : "text-ink-muted",
                       )}
                     >

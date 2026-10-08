@@ -141,7 +141,7 @@ function Actions({ className, variant = "pill" }: { className?: string; variant?
   if (variant === "link")
     return (
       <div className={cn("flex flex-wrap items-center gap-6", className)}>
-        <button type="button" onClick={() => emit("dg:capcom", {})} className="group inline-flex items-center gap-2 text-[length:var(--fs-1)] text-signal-ink underline decoration-1 underline-offset-[6px]" data-testid="hero-ask" data-cursor-label="Ask">
+        <button type="button" onClick={() => emit("dg:capcom", {})} className="group inline-flex min-h-10 items-center gap-2 text-[length:var(--fs-1)] text-signal-ink underline decoration-1 underline-offset-[6px]" data-testid="hero-ask" data-cursor-label="Ask">
           {site.genome.copy.heroCta} <span aria-hidden className="transition-transform duration-[var(--dur-base)] group-hover:translate-x-1">→</span>
         </button>
         {pdf ? (

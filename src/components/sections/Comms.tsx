@@ -75,7 +75,7 @@ export function Comms() {
             </Magnetic>
           </div>
           {profile.email ? (
-            <button type="button" onClick={copyEmail} className="mono mt-4 text-[length:var(--fs--1)] text-ink-muted underline decoration-rule underline-offset-4 hover:text-ink" aria-live="polite">
+            <button type="button" onClick={copyEmail} className="mono mt-2 inline-flex min-h-10 items-center text-[length:var(--fs--1)] text-ink-muted underline decoration-rule underline-offset-4 hover:text-ink" aria-live="polite">
               {copied ? "Copied to clipboard ✓" : `Copy ${profile.email}`}
             </button>
           ) : null}
@@ -116,7 +116,7 @@ export function Comms() {
         </span>
         <span className="flex flex-wrap gap-4">
           <Link href="/design-system" className="hover:text-ink">Design system</Link>
-          <button type="button" onClick={() => emit("dg:terminal")} className="uppercase hover:text-ink">
+          <button type="button" onClick={() => emit("dg:terminal")} className="uppercase hover:text-ink min-h-10 inline-flex items-center">
             Terminal (~)
           </button>
           <span title="↑↑↓↓←→←→BA">Try the Konami code</span>

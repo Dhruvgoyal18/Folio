@@ -12,6 +12,14 @@ type SectionKey = "summary" | "experience" | "education" | "skills" | "projects"
 
 const HEADINGS: Array<[SectionKey, RegExp]> = [
   ["summary", /^(professional\s+|career\s+)?(summary|profile|objective|about( me)?|career objective|overview)$/i],
+  // the same sections in German, French, Spanish, Italian, Portuguese, Dutch and Swedish CVs
+  ["summary", /^(profil|kurzprofil|zusammenfassung|perfil( profesional)?|profilo|samenvatting|sammanfattning|à propos)$/i],
+  ["experience", /^(berufserfahrung|erfahrung|praxiserfahrung|berufliche erfahrung|exp[ée]riences?( professionnelles?)?|parcours professionnel|experiencia( laboral| profesional)?|esperienz[ae]( lavorativ[ae]| professional[ie])?|experi[êe]ncia( profissional)?|werkervaring|(arbetslivs)?erfarenhet)$/i],
+  ["education", /^(ausbildung|bildung|bildungsweg|studium|formation|[ée]ducation|educaci[óo]n|formaci[óo]n( acad[ée]mica)?|istruzione|formazione|educa[çc][ãa]o|forma[çc][ãa]o( acad[êe]mica)?|opleiding(en)?|utbildning)$/i],
+  ["skills", /^(kenntnisse|fähigkeiten|kompetenzen|it-kenntnisse|comp[ée]tences( techniques)?|habilidades|competencias|competenze|conhecimentos|compet[êe]ncias|vaardigheden|kompetenser|färdigheter)$/i],
+  ["projects", /^(projekte|projets|proyectos|progetti|projetos|projecten|projekt)$/i],
+  ["awards", /^(auszeichnungen|distinctions|prix|premios|reconocimientos|riconoscimenti|pr[êe]mios|utmärkelser)$/i],
+  ["other", /^(sprachen|langues|idiomas|lingue|talen|språk|interessen|hobbys|loisirs|centres d'int[ée]r[êe]t|intereses|interessi)$/i],
   ["experience", /^(work\s+|professional\s+|relevant\s+|industry\s+|research\s+|clinical\s+|teaching\s+|legal\s+)?(experience|experiences|employment( history)?|work history|career history|internships?|research|teaching)$/i],
   ["education", /^(education|academics?|academic (background|details|qualifications?)|education (&|and) training|educational qualifications?|qualifications)$/i],
   ["skills", /^(technical\s+|key\s+|core\s+|relevant\s+)?(skills|skill set|skills (&|and) (tools|technologies|interests)|technologies|tech stack|tools|competencies|expertise)$/i],
@@ -43,13 +51,15 @@ const BULLET = /^\s*([•●▪‣◦∙·\-*–]|\d+[.)])\s+/;
 const EMAIL = /[\w.+-]+@[\w-]+\.[\w.-]+/;
 const PHONE = /(\+?\d[\d\s().-]{7,}\d)/;
 const URL_RE = /\b((?:https?:\/\/)?(?:www\.)?(?:linkedin\.com|github\.com|gitlab\.com|behance\.net|dribbble\.com|medium\.com|[a-z0-9-]+\.(?:dev|io|me|com|net|org|design|ai|app|xyz))\/?[^\s|,]*)/gi;
-const ROLE_WORDS = /\b(engineer|developer|intern|analyst|scientist|designer|manager|lead|head|director|consultant|researcher|associate|assistant|specialist|architect|founder|co-founder|officer|coordinator|executive|administrator|writer|editor|teacher|professor|fellow|trainee|apprentice|technician|strategist|marketer|product|owner|president|vice[- ]president|vp|cto|ceo|cfo|coo|member|secretary|treasurer|captain|representative|organi[sz]er|volunteer|mentor|tutor|convener|convenor|chair|chairperson|governor|ambassador|nominee|delegate|student|leader|programmer|accountant|nurse|physician|lawyer|attorney|paralegal|instructor|lecturer|counsel(l)?or|sales|recruiter|operator|supervisor|partner|principal|staff|sde|swe|mle)\b/i;
+const ROLE_WORDS = /\b(engineer|developer|intern|analyst|scientist|designer|manager|lead|head|director|consultant|researcher|associate|assistant|specialist|architect|founder|co-founder|officer|coordinator|executive|administrator|writer|editor|teacher|professor|fellow|trainee|apprentice|technician|strategist|marketer|product|owner|president|vice[- ]president|vp|cto|ceo|cfo|coo|member|secretary|treasurer|captain|representative|organi[sz]er|volunteer|mentor|tutor|convener|convenor|chair|chairperson|governor|ambassador|nominee|delegate|student|leader|programmer|accountant|nurse|physician|lawyer|attorney|paralegal|instructor|lecturer|counsel(l)?or|sales|recruiter|operator|supervisor|partner|principal|staff|sde|swe|mle|ingenieur(in)?|ing[ée]nieure?|ingeniera?|ingegnere|ingenj|entwickler(in)?|softwareentwickler(in)?|d[ée]veloppeu(r|se)|desarrollador(a)?|berater(in)?|consultante?|werkstudent(in)?|praktikant(in)?|stagiaire|becari[oa]|analista|gerente|directeur|directrice|responsable|cheff?e|leiter(in)?|gesch[äa]ftsf[üu]hrer(in)?)\b/i;
 const INSTITUTION = /\b(university|institute|college|school|academy|iit|nit|iiit|bits|polytechnic|mit|ucla|nyu)\b/i;
 const DEGREE = /\b(bfa|mfa|bba|bca|mca|b\.?\s?com|m\.?\s?com|llb|llm|mbbs|b\.?\s?arch|b\.?\s?des|m\.?\s?des|ph\.?\s?d|b\.?\s?tech|b\.?\s?e\b|b\.?\s?sc?|b\.?a\b|bachelor|m\.?\s?tech|m\.?\s?sc?|m\.?a\b|master|mba|ph\.?\s?d|doctor|diploma|high school|secondary|associate|a-levels|class xii|class x|hsc|ssc)\b/i;
 const TYPE_WORDS = /\b(full[- ]time|part[- ]time|internship|intern|contract|freelance|volunteer|remote|hybrid|on-?site)\b/gi;
 /** type words that can be stripped from a role title without eating it ("Research Intern" stays) */
 const ROLE_STRIP = /\(?\b(full[- ]time|part[- ]time|internship|remote|hybrid|on-?site)\b\)?/gi;
 
+/** text after a date range that only describes the job's form, not its title */
+const TYPE_ONLY = /^\(?\s*(full[- ]time|part[- ]time|internship|intern|contract|freelance|volunteer|remote|hybrid|on-?site)(\s*[,/|]\s*(full[- ]time|part[- ]time|internship|remote|hybrid|on-?site))*\s*\)?$/i;
 const clean = (s: string) => s.replace(/\t+/g, " ").replace(/\s{2,}/g, " ").trim();
 const isHeading = (line: string): SectionKey | null => {
   const t = clean(line).replace(/^[#*_\s]+|[:|_*\s]+$/g, "").replace(/\s+and\s+/gi, " & ").replace(/\s*&\s*/g, " & ");
@@ -79,16 +89,22 @@ function entries(lines: string[], opts: { titleStarts?: boolean } = {}): Entry[]
     const range = findRange(line);
     if (!bullet && range) {
       const before = clean(line.slice(0, range.index)).replace(/[\[({]\s*$/, "").replace(/[,|–—-]\s*$/, "").trim();
-      const after = clean(line.slice(range.index + range.length)).replace(/^[\])}]\s*/, "").replace(/^[,|]\s*/, "");
+      let after = clean(line.slice(range.index + range.length)).replace(/^[\])}]\s*/, "").replace(/^[,|]\s*/, "");
+      // dates first: "2020 – 2023 ⇥ Marketing Manager @ Glow" — the text after the dates is the header
+      let lead = before;
+      if (!before && after.length > 3 && !TYPE_ONLY.test(after)) {
+        lead = after;
+        after = "";
+      }
       const prev = out[out.length - 1];
       if (prev && !prev.groups.some((g) => g.bullets.length || g.title) && !prev.dates.start && prev.extra.length < 2) {
         // dates under a header line we already opened: "Org" ⏎ "Role ⇥ dates", or "Org" ⏎ "dates"
         prev.dates = { start: range.start, end: range.end };
         prev.meta = after;
-        if (before) prev.extra.unshift(before);
+        if (lead) prev.extra.unshift(lead);
         cur = prev;
       } else {
-        cur = { header: before, dates: { start: range.start, end: range.end }, extra: [], groups: [{ bullets: [] }], meta: after };
+        cur = { header: lead, dates: { start: range.start, end: range.end }, extra: [], groups: [{ bullets: [] }], meta: after };
         out.push(cur);
       }
       lastWasBullet = false;
@@ -184,7 +200,7 @@ const typeOf = (s: string) => (s.match(TYPE_WORDS) ?? [])[0];
  *   "Org ⇥ dates" + "Role"  ·  "Role ⇥ dates" + "Org"  ·  "Role at Org"  ·  "Role, Org"
  *   "Role | Org | Place [dates]"  ·  "Org | Role"  ·  "Org — Role"
  */
-function splitHeader(header: string, next: string, leadership: boolean): { org: string; role: string; location?: string; usedExtra: boolean } | null {
+function splitHeader(header: string, next: string, leadership: boolean): { org: string; role: string; location?: string; usedExtra: boolean; orgless?: boolean } | null {
   const h = header.trim();
   if (!h && !next) return null;
   const parts = h.split(/\s+[|·•]\s+|\s+[–—]\s+/).map((x) => x.trim()).filter(Boolean);
@@ -198,12 +214,16 @@ function splitHeader(header: string, next: string, leadership: boolean): { org: 
     const rest = parts.filter((_, i) => i !== roleIdx);
     return { role, org: rest[0]!, location: rest.slice(1).join(", ") || undefined, usedExtra: false };
   }
-  const at = h.match(/^(.+?)\s+(?:at|@)\s+(.+)$/i);
+  // "Role @ Org" and the unambiguous "at" of other languages (bei, chez, på, presso, bij) need no role word;
+  // English "at" does, so "Graduated at the top of class" isn't read as a job
+  const atAny = h.match(/^(.+?)\s+(?:@|bei|chez|p[åa]|presso|bij|auprès de)\s+(.+)$/i);
+  if (atAny && atAny[1]!.split(/\s+/).length <= 6) return { role: atAny[1]!, org: atAny[2]!, usedExtra: false };
+  const at = h.match(/^(.+?)\s+at\s+(.+)$/i);
   if (at && ROLE_WORDS.test(at[1]!)) return { role: at[1]!, org: at[2]!, usedExtra: false };
   const comma = h.match(/^(.+?),\s+(.+)$/);
   if (comma && ROLE_WORDS.test(comma[1]!) && !ROLE_WORDS.test(comma[2]!)) return { role: comma[1]!, org: comma[2]!, usedExtra: false };
   if (!h) return { org: next, role: leadership ? "Member" : "Role", usedExtra: true };
-  if (nextIsMeta) return { org: h, role: ROLE_WORDS.test(h) ? h : leadership ? h : "Role", usedExtra: false };
+  if (nextIsMeta) return { org: h, role: ROLE_WORDS.test(h) ? h : leadership ? h : "Role", usedExtra: false, ...(ROLE_WORDS.test(h) ? { orgless: true } : {}) };
   if (ROLE_WORDS.test(h) && !ROLE_WORDS.test(next)) return { role: h, org: next, usedExtra: true };
   return { org: h, role: next, usedExtra: true };
 }
@@ -215,17 +235,35 @@ export function parseResumeText(text: string, extraLinks: string[] = []): Heuris
     .replace(/\r/g, "")
     .split("\n")
     // markdown: headings, bold/italics markers, horizontal rules
-    .map((l) => l.replace(/^\s{0,3}#{1,6}\s+/, "").replace(/\*\*|__/g, "").replace(/^\s*([-*_])\1{2,}\s*$/, ""))
-    // two-column layouts put two headings on one line ("EXPERIENCE ⇥ SKILLS"): keep the first
-    .map((l) => (l.includes("\t") && l.split("\t").every((x) => !x.trim() || isHeading(x)) ? l.split("\t").find((x) => x.trim()) ?? "" : l));
+    .map((l) => l.replace(/^\s{0,3}#{1,6}\s+/, "").replace(/\*\*|__/g, "").replace(/^\s*([-*_])\1{2,}\s*$/, ""));
   const unplaced: string[] = [];
   const sections: Record<SectionKey | "top", string[]> = { top: [], summary: [], experience: [], education: [], skills: [], projects: [], awards: [], competitions: [], certifications: [], coursework: [], leadership: [], other: [] };
   let current: SectionKey | "top" = "top";
+  // Two-column layouts put two headings on one line ("EXPERIENCE ⇥ SKILLS"). Until the next heading,
+  // the last tab cell of each line belongs to the right-hand section — unless it is a date, which
+  // stays with its entry on the left ("Org ⇥ May 2024 – Jun 2024").
+  let right: SectionKey | null = null;
   for (const l of lines) {
+    const cells = l.includes("\t") ? l.split("\t") : null;
+    const filled = cells?.filter((x) => x.trim()) ?? [];
+    if (cells && filled.length >= 2 && filled.every((x) => isHeading(x))) {
+      current = isHeading(filled[0]!)!;
+      right = isHeading(filled[1]!);
+      continue;
+    }
     const h = isHeading(l);
     if (h) {
       current = h;
+      right = null;
       continue;
+    }
+    if (right && cells && cells.length >= 2) {
+      const last = cells[cells.length - 1]!.trim();
+      if (last && !findRange(last) && !SINGLE_DATE.test(last)) {
+        sections[current].push(cells.slice(0, -1).join("\t"));
+        sections[right].push(last);
+        continue;
+      }
     }
     sections[current].push(l);
   }
@@ -278,13 +316,18 @@ export function parseResumeText(text: string, extraLinks: string[] = []): Heuris
   /* ---- experience (and positions of responsibility / volunteering, as "Leadership" roles) ---- */
   const experience: DraftInput["experience"] = [];
   const addRoles = (list: Entry[], leadership: boolean) => {
+    let lastOrg: string | null = null;
     for (const e of list) {
       const split = splitHeader(e.header, e.extra[0] ?? "", leadership);
       if (!split) {
         unplaced.push(e.header, ...e.groups.flatMap((g) => g.bullets));
         continue;
       }
+      // a role-only line right after another role is a promotion at the same organisation:
+      // "Google" ⏎ "Senior Engineer ⇥ 2022 – now" … "Engineer ⇥ 2019 – 2021"
+      if (split.orgless && lastOrg) split.org = lastOrg;
       const { org, role, location, usedExtra } = split;
+      lastOrg = org;
       const groups = e.groups.map((g) => ({ title: g.title, bullets: g.bullets }));
       // a sub-heading recorded as the next extra line (before any bullets) belongs to the first group
       const sub = e.extra[usedExtra ? 1 : 0];

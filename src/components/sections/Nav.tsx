@@ -73,7 +73,7 @@ export function Nav() {
             if (lenis) lenis.scrollTo(0);
             else window.scrollTo({ top: 0 });
           }}
-          className="mono flex shrink-0 items-center gap-2 whitespace-nowrap text-[length:var(--fs--1)] font-medium no-underline"
+          className="mono flex min-h-10 shrink-0 items-center gap-2 whitespace-nowrap text-[length:var(--fs--1)] font-medium no-underline"
           data-cursor-label="Top"
         >
           <span aria-hidden className="inline-block h-2.5 w-2.5 rounded-full bg-signal" />

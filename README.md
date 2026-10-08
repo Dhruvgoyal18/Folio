@@ -125,6 +125,15 @@ Static pages are served from the CDN. `functions/` handles `/api/*` and `/u/<slu
 
 ## Tests and QA
 
+Quality gates:
+
+| Gate | Command | What it checks |
+| --- | --- | --- |
+| Parser quality | `npm run eval:parser` | Every fixture in `tests/fixtures/resumes.ts` is checked against its hand-written expectation in `golden.ts`. Results are reported per field (identity, entries, org/role, dates, education, projects, bullets, skills). `tests/unit/parser-quality.test.ts` fails if any field drops below 100%. |
+| Design rules | `npm run audit:design` | Every page and template is checked on desktop and phone. It reports hit targets, 16px inputs, the ellipsis character, `transition: all`, scroll margins, tabular figures and vague button labels, and counts generated-looking "tells". The rules come from Vercel's Web Interface Guidelines, Anthropic's frontend-design skill and Impeccable. `e2e/edge.spec.ts` runs the same rules in CI. |
+| Awkward résumés | `npx playwright test e2e/edge.spec.ts` | Sites built from a résumé with no numbers, one with only education, a very long one, and one in a right-to-left script are published through the API in all nine templates. |
+| Visual regression | `VISUAL=1 npx playwright test e2e/visual.spec.ts --project=desktop` | Screenshots of the hero, numbers and gallery for each template. Baselines depend on the machine, so record them with `--update-snapshots`. |
+
 ```bash
 npm test                      # Vitest: extraction on the real PDF, metrics, skills, normalise, genome (AA × all hues), API lifecycle, tokens, chat
 npx playwright test           # e2e: landing, 3 concepts + axe, create → publish → visit → chat → edit → delete, PDF upload, legacy showcase suite

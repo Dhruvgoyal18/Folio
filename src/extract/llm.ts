@@ -15,6 +15,9 @@ Rules:
 - Keep bullets under the sub-heading they appear under (groups); use one untitled group when there are no sub-headings.
 - Put hackathons/case competitions in "competitions", honours/medals/certifications in "awards", side/academic projects in "projects".
 - Skills: keep the resume's own group labels and item spellings.
+- Several roles at one organisation (promotions) are separate experience entries that repeat the organisation name.
+- A dated job filed under "Projects" or "Internships & Projects" is still an experience entry.
+- Résumés may be in any language: map section headings by meaning (Berufserfahrung, Expérience, Formation, Kenntnisse…) and keep the text in its original language.
 Answer only by calling save_resume.`;
 
 export type ExtractEnv = { ANTHROPIC_API_KEY?: string; ANTHROPIC_EXTRACT_MODEL?: string; ANTHROPIC_MODEL?: string };

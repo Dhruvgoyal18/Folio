@@ -204,4 +204,57 @@ Data Science Intern | Heltar\t[ Dec'23 – Feb'24 ]
 • Built churn prediction models in XGBoost improving recall by 18%
 SKILLS
 Languages: Python, SQL`,
+
+  germanLebenslauf: `Lena Schmidt
+lena.schmidt@example.de | München
+BERUFSERFAHRUNG
+Softwareentwicklerin bei Siemens AG\t04/2021 – heute
+• Entwicklung einer Testplattform, die die Laufzeit der Regressionstests um 35% verkürzte
+Werkstudentin bei BMW Group\t10/2019 – 03/2021
+• Datenanalyse mit Python und SQL
+AUSBILDUNG
+Technische Universität München\t2016 – 2021
+M.Sc. Informatik
+KENNTNISSE
+Python, Java, SQL, Docker`,
+
+  frenchCv: `Camille Martin
+camille.martin@example.fr
+Expérience professionnelle
+Cheffe de projet chez Decathlon\tSept 2021 – présent
+• Pilotage de 12 lancements produits par an
+Consultante chez Capgemini\t2018 – 2021
+• Accompagnement de 8 clients du secteur bancaire
+Formation
+Université Paris-Dauphine\t2013 – 2018
+Master Management
+Compétences
+Gestion de projet, SQL, Power BI`,
+
+  promotionsSameCompany: `Omar Haddad
+omar@example.com
+Experience
+Google
+Senior Software Engineer\tJan 2022 – Present
+• Led the migration of search indexing to a streaming pipeline, cutting freshness lag from 6 hours to 15 minutes
+Software Engineer\tJul 2019 – Dec 2021
+• Built ranking experiments framework used by 40+ teams
+Education
+Stanford University\t2015 – 2019
+BS Computer Science
+Skills
+Go, C++, Python, Spanner`,
+
+  datesFirstAndAtSign: `Nina Okafor
+nina@example.com
+WORK HISTORY
+2020 – 2023\tMarketing Manager @ Glow Cosmetics
+• Grew organic social following from 12k to 180k
+2017 – 2020\tSocial Media Lead @ Brightside Agency
+• Ran campaigns for 25 consumer brands
+EDUCATION
+2013 – 2017\tUniversity of Lagos
+BA Mass Communication
+SKILLS
+SEO, Content strategy, Meta Ads, Canva`,
 };

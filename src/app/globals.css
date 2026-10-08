@@ -225,6 +225,11 @@ html[data-concept="minimal"] .shadow-lifted { box-shadow: none; }
 html[data-concept="minimal"] .eyebrow { font-family: var(--ff-text); letter-spacing: 0.02em; text-transform: none; font-weight: 500; color: var(--c-ink-muted); }
 html[data-concept="minimal"] h2.display { letter-spacing: -0.035em; }
 
+html[data-concept="minimal"] .uppercase,
+html[data-concept="aurora"] .uppercase,
+html[data-concept="scholar"] .uppercase,
+html[data-concept="editorial"] .uppercase { text-transform: none; letter-spacing: 0.01em; }
+
 /* Noir: velvet surfaces, light serif, spaced small caps, metallic hairlines */
 html[data-concept="noir"] .shadow-paper,
 html[data-concept="noir"] .shadow-lifted { box-shadow: none; }
@@ -310,6 +315,18 @@ html[data-concept="blueprint"] h2.display { text-transform: uppercase; letter-sp
   line-height: 1.5;
 }
 .app .display { letter-spacing: -0.03em; }
+/* touch screens get 44px controls: a finger needs a bigger target than a cursor (WIG, WCAG 2.5.8) */
+@media (pointer: coarse) {
+  .app { --ctl-h: 2.75rem; }
+  .app .btn-sm { min-height: 2.5rem; }
+  .app .step-btn { min-height: 2.5rem; min-width: 2.5rem; justify-content: center; }
+}
+/* sections land below the sticky chapter nav when reached by anchor or keyboard */
+main section[id] { scroll-margin-top: 5rem; }
+/* on touch screens, small site controls (chips, rows, inline actions) get a 40px hit area */
+@media (pointer: coarse) {
+  .touch-target { min-height: 2.5rem; }
+}
 .app .field {
   width: 100%;
   min-height: var(--ctl-h);

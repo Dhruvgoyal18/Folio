@@ -146,7 +146,7 @@ function Bars({ usage, active, pinned, setFocus, select }: { usage: SkillUsage[]
                     onFocus={() => setFocus(u.skill.id)}
                     onPointerEnter={() => setFocus(u.skill.id)}
                     onClick={() => select(u.skill.id)}
-                    className={cn("group grid w-full grid-cols-[minmax(0,10rem)_1fr_auto] items-center gap-3 rounded-sm px-1 py-1.5 text-left", active === u.skill.id && "bg-paper-sunk")}
+                    className={cn("touch-target group grid w-full grid-cols-[minmax(0,10rem)_1fr_auto] items-center gap-3 rounded-sm px-1 py-1.5 text-left", active === u.skill.id && "bg-paper-sunk")}
                   >
                     <span className="truncate text-[length:var(--fs--1)]">{u.skill.name}</span>
                     <span className="relative h-2 overflow-hidden rounded-pill bg-paper-sunk" aria-hidden>
@@ -316,7 +316,7 @@ export function Payload() {
                       onPointerEnter={() => setFocus(u.skill.id)}
                       onClick={() => select(u.skill.id)}
                       className={cn(
-                        "mono rounded-pill border px-2.5 py-1 text-[length:var(--fs--2)] transition-colors duration-[var(--dur-fast)]",
+                        "touch-target mono rounded-pill border px-2.5 py-1 text-[length:var(--fs--2)] transition-colors duration-[var(--dur-fast)]",
                         active === u.skill.id ? "border-signal-ink bg-signal-ink text-on-signal" : "border-rule text-ink hover:border-ink",
                       )}
                     >

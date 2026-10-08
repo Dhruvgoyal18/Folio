@@ -50,3 +50,7 @@ _to_delete/
 *.zip
 AGENTS.md
 CLAUDE.md
+
+# visual-regression baselines are machine-specific (OS, browser build, fonts): record them locally
+e2e/*-snapshots/
+docs/reports/design-audit.json

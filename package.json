@@ -17,7 +17,9 @@
     "tokens": "tsx scripts/build-tokens.ts",
     "validate": "tsx scripts/validate-resume.ts",
     "cf:dev": "wrangler pages dev out",
-    "check": "npm run build && npm run typecheck && npm test"
+    "check": "npm run build && npm run typecheck && npm test",
+    "eval:parser": "tsx scripts/parser-eval.ts --verbose",
+    "audit:design": "node scripts/audit-design.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.23",

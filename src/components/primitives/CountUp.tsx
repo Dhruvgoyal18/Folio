@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "@/lib/prefs";
 import { duration as durations, type DurationToken } from "@/design/motion";
 import { easeFn } from "@/design/easing";
+import { cn } from "@/lib/cn";
 
 type Props = {
   value: number;
@@ -51,7 +52,7 @@ export function CountUp({ value, from = 0, prefix = "", suffix = "", decimals = 
   }, [inView, reduced, value, from]);
 
   return (
-    <span ref={ref} className={className}>
+    <span ref={ref} className={cn("tabular-nums", className)}>
       <span className="sr-only">{fmt(value)}</span>
       <span aria-hidden="true" className="tabular-nums">{fmt(n)}</span>
     </span>
